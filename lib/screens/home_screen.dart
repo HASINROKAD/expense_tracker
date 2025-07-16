@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Error: You must be logged in to view transactions.'),
+          content: Text('You must be logged in to view transactions.'),
           backgroundColor: TColors.errorPrimary,
         ),
       );

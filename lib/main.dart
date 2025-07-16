@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       home: AnimatedSplashScreen(
-        splash: 'assets/expense_tracker_logo.jpeg',
+        splash: 'assets/images/expense_tracker_logo.jpeg',
         splashIconSize: 2000.0,
         centered: true,
         backgroundColor: Colors.white,
@@ -54,7 +54,8 @@ class AuthCheckScreen extends StatelessWidget {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => isLoggedIn ? const MainNavigation() : const LoginScreen(),
+          builder: (context) =>
+              isLoggedIn ? const MainNavigation() : const LoginScreen(),
         ),
       );
     });

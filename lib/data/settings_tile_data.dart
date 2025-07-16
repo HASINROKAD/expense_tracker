@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../screens/add_expense_screen.dart';
-import '../screens/add_income_screen.dart';
+import '../sub_settings/preference_screen.dart';
+import '../sub_settings/notification_screen.dart';
+import '../sub_settings/privacy_security_screen.dart';
+import '../sub_settings/account_screen.dart';
+import '../sub_settings/backup_sync_screen.dart';
+import '../sub_settings/about_legal_screen.dart';
 
 class SettingTile {
   final String title;
@@ -19,17 +23,17 @@ class SettingTile {
 final List<SettingTile> settingTiles = [
   SettingTile(
     title: 'Preference',
-    route: AddIncomeScreen(),
+    route: PreferenceScreen(),
     icon: FaIcon(FontAwesomeIcons.sliders),
   ),
   SettingTile(
     title: 'Notification',
-    route: AddExpenseScreen(),
+    route: NotificationScreen(),
     icon: FaIcon(FontAwesomeIcons.bell),
   ),
   SettingTile(
     title: 'Privacy & Security',
-    route: AddExpenseScreen(),
+    route: PrivacySecurityScreen(),
     icon: FaIcon(FontAwesomeIcons.lock),
   ),
 ];
@@ -37,19 +41,17 @@ final List<SettingTile> settingTiles = [
 final List<SettingTile> settingTiles2 = [
   SettingTile(
     title: 'Accounts',
-    route: AddIncomeScreen(),
+    route: AccountScreen(),
     icon: FaIcon(FontAwesomeIcons.user),
   ),
   SettingTile(
     title: 'Backup & Sync',
-    route: AddIncomeScreen(),
+    route: BackupSyncScreen(),
     icon: FaIcon(FontAwesomeIcons.cloudArrowUp),
   ),
   SettingTile(
     title: 'About Us & Legal',
-    route: AddIncomeScreen(),
+    route: AboutLegalScreen(),
     icon: FaIcon(FontAwesomeIcons.circleInfo),
   ),
 ];
-
-

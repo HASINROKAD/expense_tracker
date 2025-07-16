@@ -32,8 +32,8 @@ class SettingsScreen extends StatelessWidget {
                         clipBehavior: Clip.antiAlias,
                         child: const CircleAvatar(
                           radius: 50,
-                          backgroundImage:
-                              AssetImage('assets/expense_tracker_logo.jpeg'),
+                          backgroundImage: AssetImage(
+                              'assets/images/expense_tracker_logo.jpeg'),
                         ),
                       ),
                       const SizedBox(width: 10),
