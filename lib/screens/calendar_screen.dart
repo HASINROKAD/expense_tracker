@@ -110,10 +110,12 @@ class _CalenderScreenState extends State<CalenderScreen> {
           .eq('user_uuid', userId);
 
       final incomeEvents = incomeResponse.map((record) {
-        final date = DateTime.parse(record['income_date']?.toString() ?? DateTime.now().toIso8601String());
+        final date = DateTime.parse(record['income_date']?.toString() ??
+            DateTime.now().toIso8601String());
         // Ensure non-null strings for eventName and category
         final payeesName = record['payees_name']?.toString() ?? '';
-        final incomeCategory = record['income_category']?.toString() ?? 'Unknown';
+        final incomeCategory =
+            record['income_category']?.toString() ?? 'Unknown';
         final eventName = payeesName.isNotEmpty ? payeesName : incomeCategory;
         return TransactionEvent(
           eventName: eventName.isNotEmpty ? eventName : 'Income',
@@ -134,10 +136,12 @@ class _CalenderScreenState extends State<CalenderScreen> {
           .eq('user_uuid', userId);
 
       final expenseEvents = expenseResponse.map((record) {
-        final date = DateTime.parse(record['expense_date']?.toString() ?? DateTime.now().toIso8601String());
+        final date = DateTime.parse(record['expense_date']?.toString() ??
+            DateTime.now().toIso8601String());
         // Ensure non-null strings for eventName and category
         final payersName = record['payers_name']?.toString() ?? '';
-        final expenseCategory = record['expense_category']?.toString() ?? 'Unknown';
+        final expenseCategory =
+            record['expense_category']?.toString() ?? 'Unknown';
         final eventName = payersName.isNotEmpty ? payersName : expenseCategory;
         return TransactionEvent(
           eventName: eventName.isNotEmpty ? eventName : 'Expense',
@@ -157,13 +161,15 @@ class _CalenderScreenState extends State<CalenderScreen> {
         _isLoading = false;
       });
     } catch (error) {
-     // Debug logging
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error fetching transactions: $error'),
-          backgroundColor: TColors.errorPrimary,
-        ),
-      );
+      // Debug logging
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error fetching transactions: $error'),
+            backgroundColor: TColors.errorPrimary,
+          ),
+        );
+      }
       setState(() {
         _isLoading = false;
         _transactionEvents = [];
@@ -183,157 +189,157 @@ class _CalenderScreenState extends State<CalenderScreen> {
           Expanded(
             child: _isLoading
                 ? const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(
-                    valueColor:
-                    AlwaysStoppedAnimation<Color>(TColors.primary),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Loading...',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: TColors.primary,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(TColors.primary),
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Loading...',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: TColors.primary,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-            )
+                  )
                 : SfCalendar(
-              view: CalendarView.month,
-              initialSelectedDate: DateTime.now(),
-              controller: calendarController,
-              dataSource: TransactionEventDataSource(_transactionEvents),
-              todayHighlightColor: TColors.tertiary,
-              todayTextStyle: TextStyle(
-                color: TColors.textWhite,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-              selectionDecoration: BoxDecoration(
-                color: Colors.transparent,
-                border: Border.all(color: TColors.primary, width: 2),
-                borderRadius: const BorderRadius.all(Radius.circular(12)),
-                shape: BoxShape.rectangle,
-              ),
-              headerStyle: CalendarHeaderStyle(
-                textStyle: TextStyle(
-                  color: TColors.primary,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-                backgroundColor: TColors.containerSecondary,
-              ),
-              headerHeight: 50,
-              viewHeaderStyle: ViewHeaderStyle(
-                backgroundColor: TColors.secondaryFixed,
-                dayTextStyle: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              viewHeaderHeight: 40,
-              monthViewSettings: MonthViewSettings(
-                appointmentDisplayMode:
-                MonthAppointmentDisplayMode.indicator,
-                showAgenda: true,
-                dayFormat: 'EEE',
-                monthCellStyle: MonthCellStyle(
-                  textStyle: const TextStyle(
-                    color: Colors.black87,
-                    fontSize: 14,
-                    fontWeight: FontWeight.normal,
-                  ),
-                  backgroundColor: Colors.transparent,
-                  todayBackgroundColor:
-                  TColors.containerSecondary.withValues(alpha: 0.2),
-                  trailingDatesTextStyle:
-                  TextStyle(color: Colors.grey[400]),
-                  leadingDatesTextStyle:
-                  TextStyle(color: Colors.grey[400]),
-                ),
-                agendaStyle: AgendaStyle(
-                  backgroundColor: Colors.white,
-                  appointmentTextStyle: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  dateTextStyle: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: TColors.primary),
-                  dayTextStyle: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: TColors.primary),
-                ),
-                agendaItemHeight: agendaItemHeight,
-              ),
-              timeSlotViewSettings: TimeSlotViewSettings(
-                timeIntervalHeight: 60,
-                timeTextStyle: const TextStyle(
-                  color: Colors.black87,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-                dayFormat: 'EEE',
-                dateFormat: 'd',
-                timeRulerSize: 50,
-                timelineAppointmentHeight: 60,
-              ),
-              appointmentBuilder: (context, calendarAppointmentDetails) {
-                final TransactionEvent event =
-                    calendarAppointmentDetails.appointments.first;
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                      color: Colors.grey[300]!,
-                      width: 1.0,
+                    view: CalendarView.month,
+                    initialSelectedDate: DateTime.now(),
+                    controller: calendarController,
+                    dataSource: TransactionEventDataSource(_transactionEvents),
+                    todayHighlightColor: TColors.tertiary,
+                    todayTextStyle: TextStyle(
+                      color: TColors.textWhite,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
                     ),
-                    borderRadius: BorderRadius.circular(4),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withValues(alpha: 0.3),
-                        spreadRadius: 1,
-                        blurRadius: 3,
-                        offset: Offset(0, 2),
+                    selectionDecoration: BoxDecoration(
+                      color: Colors.transparent,
+                      border: Border.all(color: TColors.primary, width: 2),
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
+                      shape: BoxShape.rectangle,
+                    ),
+                    headerStyle: CalendarHeaderStyle(
+                      textStyle: TextStyle(
+                        color: TColors.primary,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        event.eventName,
-                        style: TextStyle(
+                      backgroundColor: TColors.containerSecondary,
+                    ),
+                    headerHeight: 50,
+                    viewHeaderStyle: ViewHeaderStyle(
+                      backgroundColor: TColors.secondaryFixed,
+                      dayTextStyle: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    viewHeaderHeight: 40,
+                    monthViewSettings: MonthViewSettings(
+                      appointmentDisplayMode:
+                          MonthAppointmentDisplayMode.indicator,
+                      showAgenda: true,
+                      dayFormat: 'EEE',
+                      monthCellStyle: MonthCellStyle(
+                        textStyle: const TextStyle(
+                          color: Colors.black87,
                           fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          fontWeight: FontWeight.normal,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        backgroundColor: Colors.transparent,
+                        todayBackgroundColor:
+                            TColors.containerSecondary.withValues(alpha: 0.2),
+                        trailingDatesTextStyle:
+                            TextStyle(color: Colors.grey[400]),
+                        leadingDatesTextStyle:
+                            TextStyle(color: Colors.grey[400]),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${event.eventType == 'income' ? '+' : '-'} ${event.category}: ₹${event.amount.toStringAsFixed(2)}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: event.eventType == 'income'
-                              ? Colors.green[400]
-                              : Colors.red[400],
+                      agendaStyle: AgendaStyle(
+                        backgroundColor: Colors.white,
+                        appointmentTextStyle: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
                         ),
+                        dateTextStyle: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(color: TColors.primary),
+                        dayTextStyle: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(color: TColors.primary),
                       ),
-                    ],
+                      agendaItemHeight: agendaItemHeight,
+                    ),
+                    timeSlotViewSettings: TimeSlotViewSettings(
+                      timeIntervalHeight: 60,
+                      timeTextStyle: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      dayFormat: 'EEE',
+                      dateFormat: 'd',
+                      timeRulerSize: 50,
+                      timelineAppointmentHeight: 60,
+                    ),
+                    appointmentBuilder: (context, calendarAppointmentDetails) {
+                      final TransactionEvent event =
+                          calendarAppointmentDetails.appointments.first;
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(
+                            color: Colors.grey[300]!,
+                            width: 1.0,
+                          ),
+                          borderRadius: BorderRadius.circular(4),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withValues(alpha: 0.3),
+                              spreadRadius: 1,
+                              blurRadius: 3,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              event.eventName,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${event.eventType == 'income' ? '+' : '-'} ${event.category}: ₹${event.amount.toStringAsFixed(2)}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: event.eventType == 'income'
+                                    ? Colors.green[400]
+                                    : Colors.red[400],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),

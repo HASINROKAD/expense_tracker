@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 /// User data model that matches the tbl_user_data table structure
 class UserData {
   final String id;

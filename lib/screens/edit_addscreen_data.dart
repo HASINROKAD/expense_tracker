@@ -97,12 +97,14 @@ class EditAddScreenDataState extends State<EditAddScreenData> {
         }
       });
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error fetching dropdown data: $error'),
-          backgroundColor: TColors.errorPrimary,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error fetching dropdown data: $error'),
+            backgroundColor: TColors.errorPrimary,
+          ),
+        );
+      }
       setState(() {
         _isLoading = false;
         _paymentStatuses = paymentStatus; // Fallback to imported paymentStatus

@@ -115,7 +115,22 @@ class _LoginScreenState extends State<LoginScreen> {
                               overlayColor: TColors.containerPrimary,
                             ),
                             onPressed: () {
-                              // TODO: Implement forget password
+                              // Show forgot password dialog
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Forgot Password'),
+                                  content: const Text(
+                                    'Password reset functionality will be implemented soon. Please contact support if you need assistance.',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                              );
                             },
                             child: Text('Forget password'),
                           ),
@@ -136,7 +151,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
+                              final navigator = Navigator.of(context);
+                              final scaffoldMessenger =
+                                  ScaffoldMessenger.of(context);
                               final client = SupabaseAuth.client();
+
                               try {
                                 final AuthResponse res =
                                     await client.auth.signInWithPassword(
@@ -144,25 +163,27 @@ class _LoginScreenState extends State<LoginScreen> {
                                   password: passwordController.text.trim(),
                                 );
 
-                                if (res.user != null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
+                                if (res.user != null && mounted) {
+                                  scaffoldMessenger.showSnackBar(
                                     SnackBar(
-                                      content: Text('Sign In Successful'),backgroundColor: TColors.primary,
+                                      content: Text('Sign In Successful'),
+                                      backgroundColor: TColors.primary,
                                     ),
                                   );
-                                  Navigator.pushReplacement(
-                                    context,
+                                  navigator.pushReplacement(
                                     MaterialPageRoute(
                                       builder: (context) => MainNavigation(),
                                     ),
                                   );
                                 }
                               } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('please create an account'),
-                                  ),
-                                );
+                                if (mounted) {
+                                  scaffoldMessenger.showSnackBar(
+                                    SnackBar(
+                                      content: Text('please create an account'),
+                                    ),
+                                  );
+                                }
                               }
                             }
                           },

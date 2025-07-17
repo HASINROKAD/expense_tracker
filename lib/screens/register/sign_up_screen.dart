@@ -215,7 +215,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           // prefs.setString(keyEMail, emailController.text.toString());
                           // prefs.setString(keyPassword, passwordController.text.toString());
                           if (_formKey.currentState!.validate()) {
+                            final navigator = Navigator.of(context);
+                            final scaffoldMessenger =
+                                ScaffoldMessenger.of(context);
                             final client = SupabaseAuth.client();
+
                             try {
                               final AuthResponse res = await client.auth.signUp(
                                 email: emailController.text.trim(),
@@ -237,25 +241,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       mobileNumberController.text.trim(),
                                 });
 
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Account created'),
-                                  ),
-                                );
+                                if (mounted) {
+                                  scaffoldMessenger.showSnackBar(
+                                    SnackBar(
+                                      content: Text('Account created'),
+                                    ),
+                                  );
 
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LoginScreen(),
+                                  navigator.push(
+                                    MaterialPageRoute(
+                                      builder: (context) => LoginScreen(),
+                                    ),
+                                  );
+                                }
+                              }
+                            } catch (e) {
+                              if (mounted) {
+                                scaffoldMessenger.showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error creating account: $e'),
                                   ),
                                 );
                               }
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Error creating account: $e'),
-                                ),
-                              );
                             }
                           }
                         },

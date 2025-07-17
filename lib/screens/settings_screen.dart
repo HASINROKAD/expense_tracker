@@ -134,17 +134,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 10),
               GestureDetector(
                 onTap: () async {
+                  final navigator = Navigator.of(context);
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
                   final client = SupabaseAuth.client();
+
                   await client.auth.signOut();
 
                   // Clear local data cache
                   _dataManager.clearCache();
 
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaffoldMessenger.showSnackBar(
                       const SnackBar(content: Text('Successfully signed out')),
                     );
-                    Navigator.of(context).pushReplacement(
+                    navigator.pushReplacement(
                       MaterialPageRoute(
                           builder: (context) => const LoginScreen()),
                     );

@@ -23,7 +23,7 @@ class _BackupSyncScreenState extends State<BackupSyncScreen> {
   String _cloudProvider = 'Google Drive';
   bool _syncOnWiFiOnly = true;
   bool _realTimeSync = false;
-  String _lastSyncTime = '2 hours ago';
+  final String _lastSyncTime = '2 hours ago';
 
   // Backup status
   String _lastBackupDate = 'March 10, 2024';

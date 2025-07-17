@@ -110,28 +110,32 @@ class _ChartWidgetState extends State<ChartWidget> {
         _averageAmount = _chartData.isEmpty
             ? 0.0
             : _chartData.fold(0.0, (sum, data) => sum + data.value) /
-            _chartData.length;
+                _chartData.length;
       });
 
       if (_chartData.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No transactions found.'),
-            backgroundColor: TColors.primary,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No transactions found.'),
+              backgroundColor: TColors.primary,
+            ),
+          );
+        }
         setState(() {
           _chartData = [ChartData('No Data', 0, Colors.grey, 'Unknown')];
           _averageAmount = 0.0;
         });
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error fetching transactions: $error'),
-          backgroundColor: TColors.errorPrimary,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error fetching transactions: $error'),
+            backgroundColor: TColors.errorPrimary,
+          ),
+        );
+      }
       setState(() {
         _isLoading = false;
         _chartData = [ChartData('No Data', 0, Colors.grey, 'Unknown')];
@@ -236,7 +240,7 @@ class _ChartWidgetState extends State<ChartWidget> {
     _averageAmount = aggregatedData.isEmpty
         ? 0.0
         : aggregatedData.fold(0.0, (sum, data) => sum + data.value) /
-        aggregatedData.length;
+            aggregatedData.length;
 
     return aggregatedData.isEmpty
         ? [ChartData('No Data', 0, Colors.grey, 'Unknown')]
@@ -249,144 +253,144 @@ class _ChartWidgetState extends State<ChartWidget> {
       padding: const EdgeInsets.all(16),
       child: _isLoading
           ? const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(TColors.primary),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Loading...',
-              style: TextStyle(
-                fontSize: 16,
-                color: TColors.primary,
-              ),
-            ),
-          ],
-        ),
-      )
-          : Column(
-        children: [
-          // Dropdown and Segmented Button
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Dropdown Menu
-                Container(
-                  decoration: BoxDecoration(
-                    color: TColors.containerSecondary,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: TColors.primary, width: 1),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(TColors.primary),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: DropdownButton<String>(
-                    value: _selectedPeriod,
-                    items: _periodOptions.map((String period) {
-                      return DropdownMenuItem<String>(
-                        value: period,
-                        child: Text(
-                          period,
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge
-                              ?.copyWith(
-                            fontSize: 14,
-                            color: TColors.primary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      if (newValue != null) {
-                        setState(() {
-                          _selectedPeriod = newValue;
-                        });
-                      }
-                    },
-                    dropdownColor: TColors.containerSecondary,
-                    borderRadius: BorderRadius.circular(8),
-                    underline: const SizedBox(),
-                    icon: const Icon(
-                      Icons.arrow_drop_down,
+                  SizedBox(height: 16),
+                  Text(
+                    'Loading...',
+                    style: TextStyle(
+                      fontSize: 16,
                       color: TColors.primary,
                     ),
                   ),
-                ),
-                // Segmented Button
-                SizedBox(
-                  width: 240,
-                  child: SegmentedButton<ChartFilter>(
-                    style: SegmentedButton.styleFrom(
-                      selectedBackgroundColor: TColors.containerSecondary,
-                      textStyle: Theme.of(context)
-                          .textTheme
-                          .labelLarge
-                          ?.copyWith(fontSize: 14),
-                    ),
-                    segments: const <ButtonSegment<ChartFilter>>[
-                      ButtonSegment<ChartFilter>(
-                        value: ChartFilter.expense,
-                        label: Text('Expense'),
+                ],
+              ),
+            )
+          : Column(
+              children: [
+                // Dropdown and Segmented Button
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Dropdown Menu
+                      Container(
+                        decoration: BoxDecoration(
+                          color: TColors.containerSecondary,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: TColors.primary, width: 1),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: DropdownButton<String>(
+                          value: _selectedPeriod,
+                          items: _periodOptions.map((String period) {
+                            return DropdownMenuItem<String>(
+                              value: period,
+                              child: Text(
+                                period,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge
+                                    ?.copyWith(
+                                      fontSize: 14,
+                                      color: TColors.primary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              setState(() {
+                                _selectedPeriod = newValue;
+                              });
+                            }
+                          },
+                          dropdownColor: TColors.containerSecondary,
+                          borderRadius: BorderRadius.circular(8),
+                          underline: const SizedBox(),
+                          icon: const Icon(
+                            Icons.arrow_drop_down,
+                            color: TColors.primary,
+                          ),
+                        ),
                       ),
-                      ButtonSegment<ChartFilter>(
-                        value: ChartFilter.income,
-                        label: Text('Income'),
+                      // Segmented Button
+                      SizedBox(
+                        width: 240,
+                        child: SegmentedButton<ChartFilter>(
+                          style: SegmentedButton.styleFrom(
+                            selectedBackgroundColor: TColors.containerSecondary,
+                            textStyle: Theme.of(context)
+                                .textTheme
+                                .labelLarge
+                                ?.copyWith(fontSize: 14),
+                          ),
+                          segments: const <ButtonSegment<ChartFilter>>[
+                            ButtonSegment<ChartFilter>(
+                              value: ChartFilter.expense,
+                              label: Text('Expense'),
+                            ),
+                            ButtonSegment<ChartFilter>(
+                              value: ChartFilter.income,
+                              label: Text('Income'),
+                            ),
+                          ],
+                          selected: <ChartFilter>{_selectedFilter},
+                          onSelectionChanged: (Set<ChartFilter> newSelection) {
+                            setState(() {
+                              _selectedFilter = newSelection.first;
+                            });
+                          },
+                        ),
                       ),
                     ],
-                    selected: <ChartFilter>{_selectedFilter},
-                    onSelectionChanged: (Set<ChartFilter> newSelection) {
-                      setState(() {
-                        _selectedFilter = newSelection.first;
-                      });
-                    },
                   ),
+                ),
+                // Charts
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isWideScreen = constraints.maxWidth > 600;
+                    final isHeightConstrained = constraints.maxHeight.isFinite;
+                    final fallbackHeight = 300.0;
+                    final barChartHeight = isHeightConstrained
+                        ? constraints.maxHeight * 0.45
+                        : fallbackHeight;
+                    final ringChartHeight = isHeightConstrained
+                        ? constraints.maxHeight * 0.55
+                        : fallbackHeight * 1.2;
+
+                    return isWideScreen
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child:
+                                    _buildBarChart(constraints, barChartHeight),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: _buildRingChart(
+                                    constraints, ringChartHeight),
+                              ),
+                            ],
+                          )
+                        : Column(
+                            children: [
+                              _buildBarChart(constraints, barChartHeight),
+                              const SizedBox(height: 16),
+                              _buildRingChart(constraints, ringChartHeight),
+                            ],
+                          );
+                  },
                 ),
               ],
             ),
-          ),
-          // Charts
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final isWideScreen = constraints.maxWidth > 600;
-              final isHeightConstrained = constraints.maxHeight.isFinite;
-              final fallbackHeight = 300.0;
-              final barChartHeight = isHeightConstrained
-                  ? constraints.maxHeight * 0.45
-                  : fallbackHeight;
-              final ringChartHeight = isHeightConstrained
-                  ? constraints.maxHeight * 0.55
-                  : fallbackHeight * 1.2;
-
-              return isWideScreen
-                  ? Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child:
-                    _buildBarChart(constraints, barChartHeight),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildRingChart(
-                        constraints, ringChartHeight),
-                  ),
-                ],
-              )
-                  : Column(
-                children: [
-                  _buildBarChart(constraints, barChartHeight),
-                  const SizedBox(height: 16),
-                  _buildRingChart(constraints, ringChartHeight),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
     );
   }
 
@@ -504,4 +508,3 @@ class _ChartWidgetState extends State<ChartWidget> {
     );
   }
 }
-
