@@ -1,4 +1,3 @@
-import 'package:expense_tracker/theme/theme.dart';
 import 'package:flutter/material.dart';
 import '../data/local_data_manager.dart';
 import '../utils/constants/colors.dart';
@@ -103,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final double balance = metrics?.currentBalance ?? 0.0;
 
     return Scaffold(
-      backgroundColor: AppTheme.lightTheme.scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -125,10 +124,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         'Balance Summary',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(color: TColors.primary),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? TColors.primaryDark
+                                  : TColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       const SizedBox(height: 20),
                       DynamicTextRow(
@@ -155,20 +157,26 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 16),
               // Scrollable Row for Balance, Income, and Expense Cards
               _isLoading
-                  ? const Center(
+                  ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(TColors.primary),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? TColors.primaryDark
+                                  : TColors.primary,
+                            ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Text(
                             'Loading...',
                             style: TextStyle(
                               fontSize: 16,
-                              color: TColors.primary,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? TColors.primaryDark
+                                  : TColors.primary,
                             ),
                           ),
                         ],
@@ -194,28 +202,56 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  DropdownButton<String>(
-                    dropdownColor: TColors.containerSecondary,
-                    menuMaxHeight: 200,
-                    underline: Container(),
-                    borderRadius: BorderRadius.circular(10.0),
-                    elevation: 2,
-                    style: DropdownStyle.getDropdownMenuItemStyle(),
-                    value: _selectedItem,
-                    items: _items.map((String item) {
-                      return DropdownMenuItem<String>(
-                        value: item,
-                        child: Text(
-                          item,
-                          style: DropdownStyle.getDropdownMenuItemStyle(),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedItem = newValue;
-                      });
-                    },
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? TColors.containerPrimaryDark
+                          : TColors.containerPrimary,
+                      borderRadius: BorderRadius.circular(10.0),
+                      border: Border.all(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? TColors.borderDark
+                            : TColors.containerSecondary,
+                      ),
+                    ),
+                    child: DropdownButton<String>(
+                      dropdownColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? TColors.surfaceDark
+                              : TColors.containerSecondary,
+                      menuMaxHeight: 200,
+                      underline: Container(),
+                      borderRadius: BorderRadius.circular(10.0),
+                      elevation: 2,
+                      style: DropdownStyle.getDropdownMenuItemStyle().copyWith(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? TColors.textPrimaryDark
+                            : TColors.textPrimary,
+                      ),
+                      value: _selectedItem,
+                      items: _items.map((String item) {
+                        return DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(
+                            item,
+                            style: DropdownStyle.getDropdownMenuItemStyle()
+                                .copyWith(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? TColors.textPrimaryDark
+                                  : TColors.textPrimary,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedItem = newValue;
+                        });
+                      },
+                    ),
                   ),
                   ConstrainedBox(
                     constraints: const BoxConstraints(
@@ -223,7 +259,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     child: SegmentedButton<String>(
                       style: SegmentedButton.styleFrom(
-                        selectedBackgroundColor: TColors.containerSecondary,
+                        selectedBackgroundColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? TColors.primaryDark
+                                : TColors.containerSecondary,
+                        selectedForegroundColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? TColors.textWhite
+                                : TColors.textPrimary,
+                        foregroundColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? TColors.textSecondaryDark
+                                : TColors.textSecondary,
+                        backgroundColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? TColors.containerPrimaryDark
+                                : Colors.grey[100],
                         textStyle: Theme.of(context).textTheme.labelLarge,
                       ),
                       segments: const [
@@ -295,7 +346,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   .textTheme
                                   .titleMedium
                                   ?.copyWith(
-                                    color: TColors.primary,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? TColors.textPrimaryDark
+                                        : TColors.primary,
                                     fontWeight: FontWeight.w600,
                                   ),
                             ),
@@ -305,7 +359,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   .textTheme
                                   .bodyMedium
                                   ?.copyWith(
-                                    color: Colors.grey[600],
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? TColors.textSecondaryDark
+                                        : Colors.grey[600],
                                   ),
                             ),
                             trailing: Text(
@@ -323,7 +380,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           if (index < filteredTransactions.length - 1)
                             Divider(
-                              color: Colors.grey[300],
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? TColors.dividerDark
+                                  : Colors.grey[300],
                               height: 1,
                               thickness: 1,
                               indent: 16,

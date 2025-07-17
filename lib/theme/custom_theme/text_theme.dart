@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../utils/constants/colors.dart';
 
 class TTextTheme {
-
-
   //lightThemeText
   static TextTheme lightTextTheme = TextTheme(
-
-
     //headline
     headlineLarge: const TextStyle().copyWith(
         fontSize: 32.0, fontWeight: FontWeight.bold, color: Colors.black),
@@ -43,33 +40,51 @@ class TTextTheme {
   static TextTheme darkTextTheme = TextTheme(
     //headline
     headlineLarge: const TextStyle().copyWith(
-        fontSize: 32.0, fontWeight: FontWeight.bold, color: Colors.white),
+        fontSize: 32.0,
+        fontWeight: FontWeight.bold,
+        color: TColors.textPrimaryDark),
     headlineMedium: const TextStyle().copyWith(
-        fontSize: 24.0, fontWeight: FontWeight.w600, color: Colors.white),
+        fontSize: 24.0,
+        fontWeight: FontWeight.w600,
+        color: TColors.textPrimaryDark),
     headlineSmall: const TextStyle().copyWith(
-        fontSize: 18.0, fontWeight: FontWeight.w600, color: Colors.white),
+        fontSize: 18.0,
+        fontWeight: FontWeight.w600,
+        color: TColors.textPrimaryDark),
     //title
     titleLarge: const TextStyle().copyWith(
-        fontSize: 20.0, fontWeight: FontWeight.w600, color: Colors.white),
+        fontSize: 20.0,
+        fontWeight: FontWeight.w600,
+        color: TColors.textPrimaryDark),
     titleMedium: const TextStyle().copyWith(
-        fontSize: 18.0, fontWeight: FontWeight.w500, color: Colors.white),
+        fontSize: 18.0,
+        fontWeight: FontWeight.w500,
+        color: TColors.textPrimaryDark),
     titleSmall: const TextStyle().copyWith(
-        fontSize: 16.0, fontWeight: FontWeight.w400, color: Colors.white),
+        fontSize: 16.0,
+        fontWeight: FontWeight.w400,
+        color: TColors.textSecondaryDark),
     //body
     bodyLarge: const TextStyle().copyWith(
-        fontSize: 14.0, fontWeight: FontWeight.w500, color: Colors.white),
+        fontSize: 14.0,
+        fontWeight: FontWeight.w500,
+        color: TColors.textPrimaryDark),
     bodyMedium: const TextStyle().copyWith(
-        fontSize: 14.0, fontWeight: FontWeight.normal, color: Colors.white),
+        fontSize: 14.0,
+        fontWeight: FontWeight.normal,
+        color: TColors.textSecondaryDark),
     bodySmall: const TextStyle().copyWith(
         fontSize: 14.0,
         fontWeight: FontWeight.w500,
-        color: Colors.white.withValues(alpha: 0.5)),
+        color: TColors.textTertiaryDark),
     //label
     labelLarge: const TextStyle().copyWith(
-        fontSize: 12.0, fontWeight: FontWeight.normal, color: Colors.white),
+        fontSize: 12.0,
+        fontWeight: FontWeight.normal,
+        color: TColors.textSecondaryDark),
     labelMedium: const TextStyle().copyWith(
         fontSize: 12.0,
         fontWeight: FontWeight.normal,
-        color: Colors.white.withValues(alpha: 0.5)),
+        color: TColors.textTertiaryDark),
   );
 }

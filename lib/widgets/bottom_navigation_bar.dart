@@ -20,11 +20,11 @@ class _HomeScreenState extends State<MainNavigation> {
 
   // List of screens
   final List<Widget> _screens = [
-    HomeScreen(),
-    StatesScreen(),
-    AddScreen(),
-    CalenderScreen(),
-    SettingsScreen(),
+    const HomeScreen(),
+    const StatesScreen(),
+    const AddScreen(),
+    const CalenderScreen(),
+    const SettingsScreen(),
   ];
 
   // List of titles corresponding to each screen

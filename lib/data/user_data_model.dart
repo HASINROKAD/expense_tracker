@@ -205,6 +205,9 @@ class UserPreferences {
   final bool biometricEnabled;
   final bool autoBackup;
   final String defaultCountry;
+  final String? defaultExpenseCategory;
+  final String? defaultIncomeCategory;
+  final bool showDecimalPlaces;
 
   UserPreferences({
     required this.userUuid,
@@ -215,6 +218,9 @@ class UserPreferences {
     this.biometricEnabled = false,
     this.autoBackup = true,
     this.defaultCountry = 'India',
+    this.defaultExpenseCategory,
+    this.defaultIncomeCategory,
+    this.showDecimalPlaces = true,
   });
 
   factory UserPreferences.fromJson(Map<String, dynamic> json) {
@@ -227,6 +233,9 @@ class UserPreferences {
       biometricEnabled: json['biometric_enabled'] ?? false,
       autoBackup: json['auto_backup'] ?? true,
       defaultCountry: json['default_country']?.toString() ?? 'India',
+      defaultExpenseCategory: json['default_expense_category']?.toString(),
+      defaultIncomeCategory: json['default_income_category']?.toString(),
+      showDecimalPlaces: json['show_decimal_places'] ?? true,
     );
   }
 
@@ -240,6 +249,9 @@ class UserPreferences {
       'biometric_enabled': biometricEnabled,
       'auto_backup': autoBackup,
       'default_country': defaultCountry,
+      'default_expense_category': defaultExpenseCategory,
+      'default_income_category': defaultIncomeCategory,
+      'show_decimal_places': showDecimalPlaces,
     };
   }
 
@@ -252,6 +264,9 @@ class UserPreferences {
     bool? biometricEnabled,
     bool? autoBackup,
     String? defaultCountry,
+    String? defaultExpenseCategory,
+    String? defaultIncomeCategory,
+    bool? showDecimalPlaces,
   }) {
     return UserPreferences(
       userUuid: userUuid ?? this.userUuid,
@@ -262,6 +277,11 @@ class UserPreferences {
       biometricEnabled: biometricEnabled ?? this.biometricEnabled,
       autoBackup: autoBackup ?? this.autoBackup,
       defaultCountry: defaultCountry ?? this.defaultCountry,
+      defaultExpenseCategory:
+          defaultExpenseCategory ?? this.defaultExpenseCategory,
+      defaultIncomeCategory:
+          defaultIncomeCategory ?? this.defaultIncomeCategory,
+      showDecimalPlaces: showDecimalPlaces ?? this.showDecimalPlaces,
     );
   }
 

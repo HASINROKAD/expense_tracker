@@ -32,15 +32,24 @@ class TColors {
 
   // -- Dark Theme -- //
   //App Basic Colors dark theme
-  static const Color primaryDark = Color(0xFF3C6E69);
-  static const Color secondaryDark = Color(0xFF0C3A3A);
-  static const Color tertiaryDark = Color(0xFF312C2A);
+  static const Color primaryDark = Color(0xFF4A9B96);
+  static const Color secondaryDark = Color(0xFF1A5555);
+  static const Color tertiaryDark = Color(0xFF4A4A4A);
 
+  // Dark theme text colors
+  static const Color textPrimaryDark = Color(0xFFE1E1E1);
+  static const Color textSecondaryDark = Color(0xFFB0B0B0);
+  static const Color textTertiaryDark = Color(0xFF888888);
 
   //containers colors dark theme
-  static const Color containerPrimaryDark = Color(0xFF8C9A9F);
-  static const Color containerSecondaryDark = Color(0xFF7A8A8A);
-  static const Color containerTertiaryDark = Color(0xFF4D4D4D);
+  static const Color containerPrimaryDark = Color(0xFF2A2A2A);
+  static const Color containerSecondaryDark = Color(0xFF353535);
+  static const Color containerTertiaryDark = Color(0xFF404040);
+
+  // Dark theme surface colors
+  static const Color surfaceDark = Color(0xFF1E1E1E);
+  static const Color surfaceVariantDark = Color(0xFF2D2D2D);
+  static const Color backgroundDark = Color(0xFF121212);
 
   //error colors dark theme
   static const Color errorPrimaryDark = Color(0xFFFFB4AB);
@@ -50,4 +59,8 @@ class TColors {
 
   //hint text color dark theme
   static const Color hintTextDark = Color(0x99FFFFFF);
+
+  // Dark theme border colors
+  static const Color borderDark = Color(0xFF404040);
+  static const Color dividerDark = Color(0xFF2A2A2A);
 }

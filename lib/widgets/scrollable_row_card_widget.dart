@@ -44,7 +44,7 @@ class _ScrollableRowCardWidgetState extends State<ScrollableRowCardWidget> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      const firstCardWidth = 350  ;
+      const firstCardWidth = 350;
       const expenseCardHalfWidth = 350 / 2;
       final screenWidth = MediaQuery.of(context).size.width;
       final offset = firstCardWidth + expenseCardHalfWidth - (screenWidth / 2);
@@ -84,10 +84,13 @@ class _ScrollableRowCardWidgetState extends State<ScrollableRowCardWidget> {
                   children: [
                     Text(
                       'Details About Income',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(color: TColors.primary),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.primaryDark
+                                    : TColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 20),
                     DynamicTextRow(
@@ -138,10 +141,13 @@ class _ScrollableRowCardWidgetState extends State<ScrollableRowCardWidget> {
                   children: [
                     Text(
                       'Details About Expense',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(color: TColors.primary),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.primaryDark
+                                    : TColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 20),
                     DynamicTextRow(
@@ -192,27 +198,34 @@ class _ScrollableRowCardWidgetState extends State<ScrollableRowCardWidget> {
                   children: [
                     Text(
                       'Details About Balance',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(color: TColors.primary),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.primaryDark
+                                    : TColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 20),
                     DynamicTextRow(
                       label: 'Current Balance:',
                       value: widget.currentBalance.toStringAsFixed(2),
+                      valueColor: Colors.green,
                     ),
                     DynamicTextRow(
                       label: 'This Week Balance:',
                       value: widget.endOfMonthBalance.toStringAsFixed(2),
+                      valueColor: Colors.green,
                     ),
                     DynamicTextRow(
                       label: 'This Month Balance:',
                       value: widget.thisWeekBalance.toStringAsFixed(2),
+                      valueColor: Colors.green,
                     ),
                     DynamicTextRow(
                       label: 'Year to Date Balance:',
                       value: widget.thisMonthBalance.toStringAsFixed(2),
+                      valueColor: Colors.green,
                     ),
                   ],
                 ),

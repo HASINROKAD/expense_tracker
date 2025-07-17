@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/constants/colors.dart';
 
 class DynamicTextRow extends StatelessWidget {
   final String label;
@@ -22,15 +23,17 @@ class DynamicTextRow extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.black87,
-            ),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? TColors.textSecondaryDark
+                      : Colors.black87,
+                ),
           ),
           Text(
             value,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: valueColor,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: valueColor,
+                ),
           ),
         ],
       ),
