@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/payment_category.dart';
 import '../data/supabase_auth.dart';
+import '../data/local_data_manager.dart';
 import '../utils/constants/colors.dart';
 import '../validators/custom_validator.dart';
-import '../screens/add_screen.dart';
 import '../widgets/date_picker.dart';
 
 class EditAddScreenData extends StatefulWidget {
@@ -90,9 +90,10 @@ class EditAddScreenDataState extends State<EditAddScreenData> {
 
         // Set selected payment status after fetching
         if (widget.transaction != null && widget.transactionType == 'expense') {
-          _selectedPaymentStatus = _paymentStatuses.contains(widget.transaction!.category)
-              ? widget.transaction!.category
-              : null;
+          _selectedPaymentStatus =
+              _paymentStatuses.contains(widget.transaction!.category)
+                  ? widget.transaction!.category
+                  : null;
         }
       });
     } catch (error) {
@@ -136,47 +137,54 @@ class EditAddScreenDataState extends State<EditAddScreenData> {
       final data = {
         'user_uuid': userId,
         widget.transactionType == 'income' ? 'income_amount' : 'expense_amount':
-        double.tryParse(amountController.text.trim()) ?? 0.0,
+            double.tryParse(amountController.text.trim()) ?? 0.0,
         widget.transactionType == 'income' ? 'payees_name' : 'payers_name':
-        payerController.text.trim(),
+            payerController.text.trim(),
         if (widget.transactionType == 'expense') ...{
           'expense_payment_status': _selectedPaymentStatus,
         },
         widget.transactionType == 'income' ? 'income_date' : 'expense_date':
-        formattedDate,
+            formattedDate,
       };
 
       if (widget.transaction != null) {
-        await supabase.from(table).update(data).eq('id', widget.transaction!.id);
+        await supabase
+            .from(table)
+            .update(data)
+            .eq('id', widget.transaction!.id);
       } else {
         await supabase.from(table).insert(data);
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              '${widget.transactionType == 'income' ? 'Income' : 'Expense'} ${widget.transaction != null ? 'updated' : 'added'} successfully!'),
-          backgroundColor: TColors.primary,
-        ),
-      );
-
-      amountController.clear();
-      payerController.clear();
-      setState(() {
-        _selectedPaymentStatus = null;
-        _selectedDate = null;
-      });
-      Navigator.pop(context);
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Error: Failed to ${widget.transaction != null ? 'update' : 'add'} ${widget.transactionType}. $error',
-            style: const TextStyle(color: TColors.errorPrimary),
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                '${widget.transactionType == 'income' ? 'Income' : 'Expense'} ${widget.transaction != null ? 'updated' : 'added'} successfully!'),
+            backgroundColor: TColors.primary,
           ),
-          backgroundColor: TColors.primary,
-        ),
-      );
+        );
+
+        amountController.clear();
+        payerController.clear();
+        setState(() {
+          _selectedPaymentStatus = null;
+          _selectedDate = null;
+        });
+        Navigator.pop(context);
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error: Failed to ${widget.transaction != null ? 'update' : 'add'} ${widget.transactionType}. $error',
+              style: const TextStyle(color: TColors.errorPrimary),
+            ),
+            backgroundColor: TColors.primary,
+          ),
+        );
+      }
     }
   }
 
@@ -198,100 +206,100 @@ class EditAddScreenDataState extends State<EditAddScreenData> {
       ),
       body: _isLoading
           ? const Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(TColors.primary),
-        ),
-      )
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(TColors.primary),
+              ),
+            )
           : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Enter the amount of the ${widget.transactionType}',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: amountController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Example: 1000',
-                    hintStyle: TextStyle(color: TColors.hintTextLight),
-                  ),
-                  validator: validateAmount,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Specify who ${widget.transactionType == 'income' ? 'received' : 'paid for'} the ${widget.transactionType}',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: payerController,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    hintText: widget.transactionType == 'income'
-                        ? "Payee's name"
-                        : "Payer's name",
-                    hintStyle: const TextStyle(color: TColors.hintTextLight),
-                  ),
-                  validator: widget.transactionType == 'income'
-                      ? validatePayee
-                      : validatePayer,
-                ),
-
-                const SizedBox(height: 16),
-                DatePicker(
-                  initialDate: _selectedDate ?? DateTime.now(),
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime(2100), // Allow future dates
-                  labelText: 'Date',
-                  onDateSelected: (DateTime date) {
-                    setState(() {
-                      _selectedDate = date;
-                    });
-                  },
-                ),
-                if (validateDate(_selectedDate) != null &&
-                    _formKey.currentState?.validate() == false)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      validateDate(_selectedDate)!,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                        fontSize: 12,
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Enter the amount of the ${widget.transactionType}',
+                        style: Theme.of(context).textTheme.titleSmall,
                       ),
-                    ),
-                  ),
-                const SizedBox(height: 16),
-                Center(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: TColors.primary,
-                      minimumSize: const Size(180, 48),
-                      textStyle: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: amountController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Example: 1000',
+                          hintStyle: TextStyle(color: TColors.hintTextLight),
+                        ),
+                        validator: validateAmount,
                       ),
-                    ),
-                    onPressed: _saveData,
-                    child: const Text(
-                      'OK',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Specify who ${widget.transactionType == 'income' ? 'received' : 'paid for'} the ${widget.transactionType}',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: payerController,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          hintText: widget.transactionType == 'income'
+                              ? "Payee's name"
+                              : "Payer's name",
+                          hintStyle:
+                              const TextStyle(color: TColors.hintTextLight),
+                        ),
+                        validator: widget.transactionType == 'income'
+                            ? validatePayee
+                            : validatePayer,
+                      ),
+                      const SizedBox(height: 16),
+                      DatePicker(
+                        initialDate: _selectedDate ?? DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100), // Allow future dates
+                        labelText: 'Date',
+                        onDateSelected: (DateTime date) {
+                          setState(() {
+                            _selectedDate = date;
+                          });
+                        },
+                      ),
+                      if (validateDate(_selectedDate) != null &&
+                          _formKey.currentState?.validate() == false)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            validateDate(_selectedDate)!,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: TColors.primary,
+                            minimumSize: const Size(180, 48),
+                            textStyle: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          onPressed: _saveData,
+                          child: const Text(
+                            'OK',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 

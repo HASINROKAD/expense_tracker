@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../utils/constants/colors.dart';
+import '../data/local_data_manager.dart';
+import '../data/user_data_model.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -10,32 +13,30 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  // User profile data
-  String _userName = 'John Doe';
-  String _userEmail = 'john.doe@example.com';
-  String _userPhone = '+1 (555) 123-4567';
+  final LocalDataManager _dataManager = LocalDataManager();
 
-  // Account settings
-  bool _emailVerified = true;
-  bool _phoneVerified = false;
-  bool _twoFactorEnabled = false;
+  @override
+  void initState() {
+    super.initState();
+    _dataManager.addListener(_onDataChanged);
+    _initializeData();
+  }
 
-  // Multiple accounts
-  List<Map<String, dynamic>> _userAccounts = [
-    {
-      'id': '1',
-      'name': 'John Doe',
-      'email': 'john.doe@example.com',
-      'isActive': true,
-      'avatar': null,
-      'accountType': 'Personal',
-    },
-  ];
+  @override
+  void dispose() {
+    _dataManager.removeListener(_onDataChanged);
+    super.dispose();
+  }
 
-  // Statistics
-  int _totalTransactions = 1247;
-  int _categoriesCreated = 15;
-  int _daysActive = 45;
+  void _onDataChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<void> _initializeData() async {
+    await _dataManager.initialize();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,12 +45,7 @@ class _AccountScreenState extends State<AccountScreen> {
         title: const Text('Account'),
         backgroundColor: TColors.primary,
         foregroundColor: TColors.textWhite,
-        actions: [
-          IconButton(
-            icon: const FaIcon(FontAwesomeIcons.pen),
-            onPressed: _editProfile,
-          ),
-        ],
+        // Edit profile action removed
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -64,38 +60,33 @@ class _AccountScreenState extends State<AccountScreen> {
             _buildSectionHeader('Account Status'),
             _buildStatusTile(
               'Email Verification',
-              _emailVerified ? 'Verified' : 'Not Verified',
-              _emailVerified
-                  ? FontAwesomeIcons.circleCheck
-                  : FontAwesomeIcons.circleXmark,
-              _emailVerified ? TColors.primary : TColors.errorPrimary,
-              _emailVerified ? null : _verifyEmail,
+              'Verified', // Assuming verified since user is logged in
+              FontAwesomeIcons.circleCheck,
+              TColors.primary,
+              null,
             ),
             _buildStatusTile(
               'Phone Verification',
-              _phoneVerified ? 'Verified' : 'Not Verified',
-              _phoneVerified
+              (_dataManager.userData?.phoneNumber?.isNotEmpty ?? false)
+                  ? 'Verified'
+                  : 'Not Verified',
+              (_dataManager.userData?.phoneNumber?.isNotEmpty ?? false)
                   ? FontAwesomeIcons.circleCheck
                   : FontAwesomeIcons.circleXmark,
-              _phoneVerified ? TColors.primary : TColors.errorPrimary,
-              _phoneVerified ? null : _verifyPhone,
+              (_dataManager.userData?.phoneNumber?.isNotEmpty ?? false)
+                  ? TColors.primary
+                  : TColors.errorPrimary,
+              (_dataManager.userData?.phoneNumber?.isNotEmpty ?? false)
+                  ? null
+                  : _verifyPhone,
             ),
             _buildStatusTile(
               'Two-Factor Authentication',
-              _twoFactorEnabled ? 'Enabled' : 'Disabled',
-              _twoFactorEnabled
-                  ? FontAwesomeIcons.shield
-                  : FontAwesomeIcons.shieldHalved,
-              _twoFactorEnabled ? TColors.primary : TColors.errorPrimary,
+              'Disabled', // Default to disabled
+              FontAwesomeIcons.shieldHalved,
+              TColors.errorPrimary,
               _toggle2FA,
             ),
-            const SizedBox(height: 24),
-
-            // Multiple Accounts
-            _buildSectionHeader('Multiple Accounts'),
-            _buildAccountsList(),
-            const SizedBox(height: 16),
-            _buildAddAccountButton(),
             const SizedBox(height: 24),
 
             // Account Statistics
@@ -193,7 +184,8 @@ class _AccountScreenState extends State<AccountScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: _emailVerified ? Colors.green : Colors.orange,
+                        color: Colors
+                            .green, // Assuming verified since user is logged in
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: TColors.textWhite,
@@ -201,9 +193,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         ),
                       ),
                       child: FaIcon(
-                        _emailVerified
-                            ? FontAwesomeIcons.check
-                            : FontAwesomeIcons.exclamation,
+                        FontAwesomeIcons.check, // Assuming verified
                         size: 12,
                         color: TColors.textWhite,
                       ),
@@ -219,7 +209,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   children: [
                     // Name with better typography
                     Text(
-                      _userName,
+                      _dataManager.userData?.displayName ?? 'User Name',
                       style:
                           Theme.of(context).textTheme.headlineMedium?.copyWith(
                                 color: TColors.textWhite,
@@ -239,7 +229,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            _userEmail,
+                            'user@example.com', // Email from auth, not stored in user data
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
@@ -251,30 +241,28 @@ class _AccountScreenState extends State<AccountScreen> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        if (_emailVerified)
-                          Container(
-                            margin: const EdgeInsets.only(left: 8),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.green.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: Colors.green.withValues(alpha: 0.5),
-                              ),
-                            ),
-                            child: Text(
-                              'Verified',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: Colors.green[100],
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 10,
-                                  ),
+                        // Email verified badge
+                        Container(
+                          margin: const EdgeInsets.only(left: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.green.withValues(alpha: 0.5),
                             ),
                           ),
+                          child: Text(
+                            'Verified',
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.green[100],
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 10,
+                                    ),
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -289,7 +277,8 @@ class _AccountScreenState extends State<AccountScreen> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            _userPhone,
+                            _dataManager.userData?.formattedPhoneNumber ??
+                                'Not provided',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
@@ -300,7 +289,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                 ),
                           ),
                         ),
-                        if (_phoneVerified)
+                        if (_dataManager.userData?.phoneNumber?.isNotEmpty ??
+                            false)
                           Container(
                             margin: const EdgeInsets.only(left: 8),
                             padding: const EdgeInsets.symmetric(
@@ -331,6 +321,32 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          // Edit Profile Button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _editProfile,
+              icon: const Icon(Icons.edit, color: TColors.textWhite),
+              label: const Text(
+                'Edit Profile',
+                style: TextStyle(
+                  color: TColors.textWhite,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: TColors.textWhite.withValues(alpha: 0.2),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: TColors.textWhite.withValues(alpha: 0.3),
+                  ),
+                ),
+              ),
+            ),
+          ),
           const SizedBox(height: 20),
           // Security status bar
           Container(
@@ -347,16 +363,12 @@ class _AccountScreenState extends State<AccountScreen> {
                 FaIcon(
                   FontAwesomeIcons.shield,
                   size: 16,
-                  color: _twoFactorEnabled
-                      ? Colors.green[300]
-                      : Colors.orange[300],
+                  color: Colors.orange[300], // 2FA disabled by default
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    _twoFactorEnabled
-                        ? 'Account secured with 2FA'
-                        : 'Enable 2FA for better security',
+                    'Enable 2FA for better security', // 2FA disabled by default
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: TColors.textWhite.withValues(alpha: 0.9),
                           fontWeight: FontWeight.w500,
@@ -367,17 +379,13 @@ class _AccountScreenState extends State<AccountScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _twoFactorEnabled
-                        ? Colors.green.withValues(alpha: 0.2)
-                        : Colors.orange.withValues(alpha: 0.2),
+                    color: Colors.orange.withValues(alpha: 0.2), // 2FA disabled
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    _twoFactorEnabled ? 'Secure' : 'At Risk',
+                    'At Risk', // 2FA disabled by default
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: _twoFactorEnabled
-                              ? Colors.green[100]
-                              : Colors.orange[100],
+                          color: Colors.orange[100], // 2FA disabled
                           fontWeight: FontWeight.w600,
                           fontSize: 11,
                         ),
@@ -439,183 +447,6 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _buildAccountsList() {
-    return Column(
-      children:
-          _userAccounts.map((account) => _buildAccountTile(account)).toList(),
-    );
-  }
-
-  Widget _buildAccountTile(Map<String, dynamic> account) {
-    bool isActive = account['isActive'] ?? false;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: isActive
-            ? TColors.primary.withValues(alpha: 0.1)
-            : TColors.containerPrimary.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isActive ? TColors.primary : TColors.containerPrimary,
-          width: isActive ? 2 : 1,
-        ),
-      ),
-      child: ListTile(
-        leading: CircleAvatar(
-          radius: 24,
-          backgroundColor: TColors.primary.withValues(alpha: 0.2),
-          child: account['avatar'] != null
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  child: Image.network(
-                    account['avatar'],
-                    width: 48,
-                    height: 48,
-                    fit: BoxFit.cover,
-                  ),
-                )
-              : FaIcon(
-                  FontAwesomeIcons.user,
-                  size: 20,
-                  color: TColors.primary,
-                ),
-        ),
-        title: Row(
-          children: [
-            Expanded(
-              child: Text(
-                account['name'],
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-            ),
-            if (isActive)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: TColors.primary,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  'Active',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: TColors.textWhite,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-              ),
-          ],
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              account['email'],
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: TColors.textSecondary,
-                  ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              account['accountType'],
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: TColors.primary,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-          ],
-        ),
-        trailing: PopupMenuButton<String>(
-          onSelected: (value) => _handleAccountAction(value, account),
-          itemBuilder: (context) => [
-            if (!isActive)
-              const PopupMenuItem(
-                value: 'switch',
-                child: Row(
-                  children: [
-                    Icon(Icons.swap_horiz),
-                    SizedBox(width: 8),
-                    Text('Switch to this account'),
-                  ],
-                ),
-              ),
-            const PopupMenuItem(
-              value: 'edit',
-              child: Row(
-                children: [
-                  Icon(Icons.edit),
-                  SizedBox(width: 8),
-                  Text('Edit account'),
-                ],
-              ),
-            ),
-            if (_userAccounts.length > 1)
-              const PopupMenuItem(
-                value: 'remove',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('Remove account', style: TextStyle(color: Colors.red)),
-                  ],
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAddAccountButton() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: TColors.primary.withValues(alpha: 0.3),
-          style: BorderStyle.solid,
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _showAddAccountOptions,
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: TColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: FaIcon(
-                    FontAwesomeIcons.plus,
-                    size: 20,
-                    color: TColors.primary,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Add Another Account',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: TColors.primary,
-                      ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildStatsCard() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -629,7 +460,7 @@ class _AccountScreenState extends State<AccountScreen> {
           Expanded(
             child: _buildStatItem(
               'Transactions',
-              _totalTransactions.toString(),
+              _dataManager.getUserStatistics()['totalTransactions'].toString(),
               FontAwesomeIcons.receipt,
             ),
           ),
@@ -641,7 +472,7 @@ class _AccountScreenState extends State<AccountScreen> {
           Expanded(
             child: _buildStatItem(
               'Categories',
-              _categoriesCreated.toString(),
+              _dataManager.getUserStatistics()['categoriesCreated'].toString(),
               FontAwesomeIcons.tags,
             ),
           ),
@@ -653,7 +484,7 @@ class _AccountScreenState extends State<AccountScreen> {
           Expanded(
             child: _buildStatItem(
               'Days Active',
-              _daysActive.toString(),
+              _dataManager.getUserStatistics()['daysActive'].toString(),
               FontAwesomeIcons.calendar,
             ),
           ),
@@ -738,30 +569,6 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  // Action handlers
-  void _editProfile() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Profile'),
-        content: const Text(
-            'Profile editing functionality would be implemented here.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _verifyEmail() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Email verification sent!')),
-    );
-  }
-
   void _verifyPhone() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Phone verification code sent!')),
@@ -769,224 +576,25 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   void _toggle2FA() {
-    setState(() {
-      _twoFactorEnabled = !_twoFactorEnabled;
-    });
+    // 2FA toggle functionality would be implemented here
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(_twoFactorEnabled
-            ? 'Two-factor authentication enabled'
-            : 'Two-factor authentication disabled'),
+      const SnackBar(
+        content: Text('Two-factor authentication feature coming soon'),
       ),
     );
   }
 
-  void _handleAccountAction(String action, Map<String, dynamic> account) {
-    switch (action) {
-      case 'switch':
-        _switchToAccount(account);
-        break;
-      case 'edit':
-        _editAccount(account);
-        break;
-      case 'remove':
-        _removeAccount(account);
-        break;
+  // Edit Profile functionality
+  void _editProfile() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => _EditProfileDialog(dataManager: _dataManager),
+    );
+
+    if (result == true) {
+      // Profile was updated, refresh data
+      await _dataManager.refreshUserData();
     }
-  }
-
-  void _switchToAccount(Map<String, dynamic> account) {
-    setState(() {
-      // Set all accounts to inactive
-      for (var acc in _userAccounts) {
-        acc['isActive'] = false;
-      }
-      // Set selected account to active
-      account['isActive'] = true;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Switched to ${account['name']}'),
-        backgroundColor: TColors.primary,
-      ),
-    );
-  }
-
-  void _editAccount(Map<String, dynamic> account) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Account'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: const InputDecoration(labelText: 'Name'),
-              controller: TextEditingController(text: account['name']),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              decoration: const InputDecoration(labelText: 'Email'),
-              controller: TextEditingController(text: account['email']),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Account updated')),
-              );
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _removeAccount(Map<String, dynamic> account) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Remove Account'),
-        content: Text('Are you sure you want to remove ${account['name']}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _userAccounts.removeWhere((acc) => acc['id'] == account['id']);
-              });
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${account['name']} removed'),
-                  backgroundColor: TColors.errorPrimary,
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: TColors.errorPrimary,
-            ),
-            child: const Text('Remove'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showAddAccountOptions() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: TColors.textSecondary,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Add Account',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 20),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: TColors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: FaIcon(
-                  FontAwesomeIcons.userPlus,
-                  color: TColors.primary,
-                ),
-              ),
-              title: const Text('Create New Account'),
-              subtitle: const Text('Sign up for a new account'),
-              onTap: () {
-                Navigator.pop(context);
-                _createNewAccount();
-              },
-            ),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: TColors.secondary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: FaIcon(
-                  FontAwesomeIcons.rightToBracket,
-                  color: TColors.secondary,
-                ),
-              ),
-              title: const Text('Login to Existing Account'),
-              subtitle: const Text('Sign in with existing credentials'),
-              onTap: () {
-                Navigator.pop(context);
-                _loginToExistingAccount();
-              },
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _createNewAccount() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Create New Account'),
-        content: const Text('New account creation would be implemented here.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _loginToExistingAccount() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Login to Account'),
-        content: const Text('Account login would be implemented here.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
   }
 
   void _changePassword() {
@@ -1042,6 +650,277 @@ class _AccountScreenState extends State<AccountScreen> {
             child: const Text('Delete'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Edit Profile Dialog Widget
+class _EditProfileDialog extends StatefulWidget {
+  final LocalDataManager dataManager;
+
+  const _EditProfileDialog({required this.dataManager});
+
+  @override
+  State<_EditProfileDialog> createState() => _EditProfileDialogState();
+}
+
+class _EditProfileDialogState extends State<_EditProfileDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _firstNameController;
+  late TextEditingController _lastNameController;
+  late TextEditingController _userNameController;
+  late TextEditingController _phoneController;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final userData = widget.dataManager.userData;
+    _firstNameController =
+        TextEditingController(text: userData?.firstName ?? '');
+    _lastNameController = TextEditingController(text: userData?.lastName ?? '');
+    _userNameController = TextEditingController(text: userData?.userName ?? '');
+    _phoneController = TextEditingController(text: userData?.phoneNumber ?? '');
+  }
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _userNameController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveProfile() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      final currentUserData = widget.dataManager.userData;
+      final userId = widget.dataManager.currentUserId;
+
+      if (userId == null) {
+        throw Exception('User not authenticated');
+      }
+
+      // Clean phone number (digits only)
+      final cleanPhone =
+          _phoneController.text.trim().replaceAll(RegExp(r'[^\d]'), '');
+
+      // Create updated user data
+      final updatedUserData = currentUserData?.copyWith(
+            firstName: _firstNameController.text.trim(),
+            lastName: _lastNameController.text.trim(),
+            userName: _userNameController.text.trim().isEmpty
+                ? null
+                : _userNameController.text.trim(),
+            phoneNumber: cleanPhone.isEmpty ? null : cleanPhone,
+          ) ??
+          UserData(
+            id: '',
+            createdAt: DateTime.now(),
+            userUuid: userId,
+            firstName: _firstNameController.text.trim(),
+            lastName: _lastNameController.text.trim(),
+            userName: _userNameController.text.trim().isEmpty
+                ? null
+                : _userNameController.text.trim(),
+            phoneNumber: cleanPhone.isEmpty ? null : cleanPhone,
+          );
+
+      await widget.dataManager.saveUserData(updatedUserData);
+
+      if (mounted) {
+        Navigator.pop(context, true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profile updated successfully!'),
+            backgroundColor: TColors.primary,
+          ),
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error saving profile: $error'),
+            backgroundColor: TColors.errorPrimary,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            Row(
+              children: [
+                Icon(Icons.edit, color: TColors.primary, size: 24),
+                const SizedBox(width: 12),
+                Text(
+                  'Edit Profile',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: TColors.primary,
+                      ),
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // Form
+            Expanded(
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      // First Name
+                      TextFormField(
+                        controller: _firstNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'First Name',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.person_outline),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter your first name';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Last Name
+                      TextFormField(
+                        controller: _lastNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Last Name',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.person_outline),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter your last name';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Username (Optional)
+                      TextFormField(
+                        controller: _userNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Username (Optional)',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.alternate_email),
+                          helperText: 'Optional username for your account',
+                        ),
+                        validator: (value) {
+                          if (value != null &&
+                              value.trim().isNotEmpty &&
+                              value.trim().length < 3) {
+                            return 'Username must be at least 3 characters';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Phone Number
+                      TextFormField(
+                        controller: _phoneController,
+                        decoration: const InputDecoration(
+                          labelText: 'Phone Number',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.phone_outlined),
+                          helperText: 'Enter your 10-digit phone number',
+                        ),
+                        keyboardType: TextInputType.number,
+                        maxLength: 10,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        validator: (value) {
+                          if (value != null && value.trim().isNotEmpty) {
+                            final phone =
+                                value.trim().replaceAll(RegExp(r'[^\d]'), '');
+                            if (phone.length != 10) {
+                              return 'Please enter exactly 10 digits';
+                            }
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Action Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _isSaving ? null : () => Navigator.pop(context),
+                    child: const Text('Cancel'),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _isSaving ? null : _saveProfile,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: TColors.primary,
+                      foregroundColor: TColors.textWhite,
+                    ),
+                    child: _isSaving
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  TColors.textWhite),
+                            ),
+                          )
+                        : const Text('Save'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

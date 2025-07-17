@@ -47,7 +47,7 @@ class AddExpenseScreenState extends State<AddExpenseScreen> {
     }
 
     final formattedDate =
-    _selectedDate != null ? _selectedDate! : DateTime.now();
+        _selectedDate != null ? _selectedDate! : DateTime.now();
 
     try {
       final response = await supabase.from('tbl_add_expense_data').insert({
@@ -61,32 +61,36 @@ class AddExpenseScreenState extends State<AddExpenseScreen> {
       }).select();
 
       if (response.isNotEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Expense added successfully!'),
+              backgroundColor: TColors.primary,
+            ),
+          );
+          amountController.clear();
+          payerController.clear();
+          setState(() {
+            _selectedCategory = null;
+            _selectedPaymentMethod = null;
+            _selectedPaymentStatus = null;
+            _selectedDate = null;
+          });
+          Navigator.pop(context);
+        }
+      }
+    } catch (error) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Expense added successfully!'),
+          SnackBar(
+            content: Text(
+              'Error: Failed to add expense. $error',
+              style: const TextStyle(color: TColors.errorPrimary),
+            ),
             backgroundColor: TColors.primary,
           ),
         );
-        amountController.clear();
-        payerController.clear();
-        setState(() {
-          _selectedCategory = null;
-          _selectedPaymentMethod = null;
-          _selectedPaymentStatus = null;
-          _selectedDate = null;
-        });
-        Navigator.pop(context);
       }
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Error: Failed to add expense. $error',
-            style: const TextStyle(color: TColors.errorPrimary),
-          ),
-          backgroundColor: TColors.primary,
-        ),
-      );
     }
   }
 

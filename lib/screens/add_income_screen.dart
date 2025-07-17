@@ -40,7 +40,7 @@ class AddIncomeScreenState extends State<AddIncomeScreen> {
     final client = SupabaseAuth.client();
     final userId = client.auth.currentUser?.id;
     final formattedDate =
-    _selectedDate != null ? _selectedDate! : DateTime.now();
+        _selectedDate != null ? _selectedDate! : DateTime.now();
 
     try {
       final response = await supabase.from('tbl_add_income_data').insert({
@@ -53,33 +53,37 @@ class AddIncomeScreenState extends State<AddIncomeScreen> {
         'income_date': formattedDate.toIso8601String(),
       }).select();
       if (response.isNotEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Income added successfully!'),
+              backgroundColor: TColors.primary,
+            ),
+          );
+          // Clear form after successful insertion
+          amountController.clear();
+          payeeController.clear();
+          setState(() {
+            _selectedCategory = null;
+            _selectedPaymentMethod = null;
+            _selectedPaymentStatus = null;
+            _selectedDate = null;
+          });
+          Navigator.pop(context);
+        }
+      }
+    } catch (error) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Income added successfully!'),
+            content: Text(
+              'Sorry your data is not inserted,Try again',
+              style: TextStyle(color: TColors.errorPrimary),
+            ),
             backgroundColor: TColors.primary,
           ),
         );
-        // Clear form after successful insertion
-        amountController.clear();
-        payeeController.clear();
-        setState(() {
-          _selectedCategory = null;
-          _selectedPaymentMethod = null;
-          _selectedPaymentStatus = null;
-          _selectedDate = null;
-        });
-        Navigator.pop(context);
       }
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Sorry your data is not inserted,Try again',
-            style: TextStyle(color: TColors.errorPrimary),
-          ),
-          backgroundColor: TColors.primary,
-        ),
-      );
     }
   }
 

@@ -1,15 +1,45 @@
 import 'package:expense_tracker/data/settings_tile_data.dart';
 import 'package:expense_tracker/screens/login/login_screen.dart';
-import 'package:expense_tracker/sub_settings/user_info_screen.dart';
 import 'package:expense_tracker/widgets/setting_tile_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../data/supabase_auth.dart';
+import '../data/local_data_manager.dart';
 import '../utils/constants/colors.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  final LocalDataManager _dataManager = LocalDataManager();
+
+  @override
+  void initState() {
+    super.initState();
+    _dataManager.addListener(_onDataChanged);
+    _initializeData();
+  }
+
+  @override
+  void dispose() {
+    _dataManager.removeListener(_onDataChanged);
+    super.dispose();
+  }
+
+  void _onDataChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<void> _initializeData() async {
+    await _dataManager.initialize();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,45 +71,40 @@ class SettingsScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'User Name',
+                            _dataManager.userData?.displayName ?? 'User Name',
                             style: Theme.of(context).textTheme.headlineMedium,
                           ),
                           Text(
-                            'Mobile number',
+                            _dataManager.userData?.formattedPhoneNumber ??
+                                'Mobile number',
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
+                          if (_dataManager.userData != null &&
+                              !_dataManager.userData!.isComplete)
+                            Container(
+                              margin: const EdgeInsets.only(top: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.orange.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                'Profile ${(_dataManager.userData!.completionPercentage * 100).toInt()}% complete',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      color: Colors.orange,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                              ),
+                            ),
                         ],
                       ),
                     ],
                   ),
-                  Positioned(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        side: BorderSide(color: TColors.primary),
-                        textStyle: Theme.of(context).textTheme.labelMedium,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 15,
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => UserInfoScreen(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'Edit Profile',
-                        style: TextStyle(
-                          color: TColors.primary,
-                        ),
-                      ),
-                    ),
-                  ),
+                  // Edit profile button removed
                 ],
               ),
               const SizedBox(height: 10),
@@ -111,12 +136,19 @@ class SettingsScreen extends StatelessWidget {
                 onTap: () async {
                   final client = SupabaseAuth.client();
                   await client.auth.signOut();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Successfully signed out')),
-                  );
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );
+
+                  // Clear local data cache
+                  _dataManager.clearCache();
+
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Successfully signed out')),
+                    );
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()),
+                    );
+                  }
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
