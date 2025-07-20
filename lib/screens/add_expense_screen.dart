@@ -98,14 +98,16 @@ class AddExpenseScreenState extends State<AddExpenseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: TColors.primary,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? TColors.primaryDark
+            : TColors.primary,
         foregroundColor: TColors.textWhite,
         title: Text(
           'Add Expense',
-          style: Theme.of(context)
-              .textTheme
-              .headlineSmall
-              ?.copyWith(color: TColors.textWhite),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: TColors.textWhite,
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ),
       body: Padding(
@@ -124,10 +126,14 @@ class AddExpenseScreenState extends State<AddExpenseScreen> {
                 TextFormField(
                   controller: amountController,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
                     hintText: 'Example: 1000',
-                    hintStyle: TextStyle(color: TColors.hintTextLight),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? TColors.hintTextDark
+                          : TColors.hintTextLight,
+                    ),
                   ),
                   validator: validateAmount,
                 ),
@@ -139,10 +145,14 @@ class AddExpenseScreenState extends State<AddExpenseScreen> {
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: payerController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
                     hintText: "Payer's name",
-                    hintStyle: TextStyle(color: TColors.hintTextLight),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? TColors.hintTextDark
+                          : TColors.hintTextLight,
+                    ),
                   ),
                   validator: validatePayer,
                 ),
@@ -253,7 +263,10 @@ class AddExpenseScreenState extends State<AddExpenseScreen> {
                 Center(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: TColors.primary,
+                      backgroundColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? TColors.primaryDark
+                              : TColors.primary,
                       minimumSize: const Size(180, 48),
                       textStyle: const TextStyle(
                         fontSize: 16,

@@ -31,6 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.only(
@@ -68,11 +69,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: emailController,
                         decoration: InputDecoration(
-                          prefixIcon: Icon(FontAwesomeIcons.envelope),
+                          prefixIcon: Icon(
+                            FontAwesomeIcons.envelope,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.primaryDark
+                                    : TColors.primary,
+                          ),
                           labelText: 'E-Mail',
                           border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: TColors.primary, width: 2.0),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? TColors.primaryDark
+                                  : TColors.primary,
+                              width: 2.0,
+                            ),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
@@ -83,12 +95,24 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: passwordController,
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
-                          prefixIcon: Icon(FontAwesomeIcons.lock),
+                          prefixIcon: Icon(
+                            FontAwesomeIcons.lock,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.primaryDark
+                                    : TColors.primary,
+                          ),
                           labelText: 'Password',
                           suffixIcon: IconButton(
-                            icon: Icon(_obscurePassword
-                                ? FontAwesomeIcons.eyeSlash
-                                : FontAwesomeIcons.eye),
+                            icon: Icon(
+                              _obscurePassword
+                                  ? FontAwesomeIcons.eyeSlash
+                                  : FontAwesomeIcons.eye,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? TColors.primaryDark
+                                  : TColors.primary,
+                            ),
                             onPressed: () {
                               setState(() {
                                 _obscurePassword = !_obscurePassword;
@@ -96,8 +120,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                           ),
                           border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: TColors.primary, width: 2.0),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? TColors.primaryDark
+                                  : TColors.primary,
+                              width: 2.0,
+                            ),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
@@ -146,14 +175,22 @@ class _LoginScreenState extends State<LoginScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            backgroundColor: TColors.containerPrimary,
-                            foregroundColor: TColors.primary,
+                            backgroundColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.primaryDark
+                                    : TColors.containerPrimary,
+                            foregroundColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.textWhite
+                                    : TColors.primary,
                           ),
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               final navigator = Navigator.of(context);
                               final scaffoldMessenger =
                                   ScaffoldMessenger.of(context);
+                              final isDark = Theme.of(context).brightness ==
+                                  Brightness.dark;
                               final client = SupabaseAuth.client();
 
                               try {
@@ -166,8 +203,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (res.user != null && mounted) {
                                   scaffoldMessenger.showSnackBar(
                                     SnackBar(
-                                      content: Text('Sign In Successful'),
-                                      backgroundColor: TColors.primary,
+                                      content: const Text('Sign In Successful'),
+                                      backgroundColor: isDark
+                                          ? TColors.primaryDark
+                                          : TColors.primary,
                                     ),
                                   );
                                   navigator.pushReplacement(

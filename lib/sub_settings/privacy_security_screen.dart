@@ -28,13 +28,22 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? TColors.backgroundDark
+          : Colors.grey[50],
       appBar: AppBar(
         title: const Text('Privacy & Security'),
-        backgroundColor: TColors.primary,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? TColors.primaryDark
+            : TColors.primary,
         foregroundColor: TColors.textWhite,
+        elevation: Theme.of(context).brightness == Brightness.dark ? 8 : 4,
+        shadowColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.black54
+            : Colors.grey.withValues(alpha: 0.3),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -103,14 +112,14 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
               'Require Auth for Export',
               'Require authentication to export data',
               _requireAuthForExport,
-              FontAwesomeIcons.fileExport,
+              FontAwesomeIcons.download,
               (value) => setState(() => _requireAuthForExport = value),
             ),
             _buildSwitchTile(
               'Require Auth for Delete',
               'Require authentication to delete data',
               _requireAuthForDelete,
-              FontAwesomeIcons.trash,
+              FontAwesomeIcons.trashCan,
               (value) => setState(() => _requireAuthForDelete = value),
             ),
             const SizedBox(height: 16),
@@ -165,14 +174,40 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
   }
 
   Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: TColors.primary,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? TColors.primaryDark
+                      : TColors.primary,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            height: 3,
+            width: 50,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: Theme.of(context).brightness == Brightness.dark
+                    ? [
+                        TColors.primaryDark,
+                        TColors.primaryDark.withValues(alpha: 0.5),
+                      ]
+                    : [
+                        TColors.primary,
+                        TColors.primary.withValues(alpha: 0.5),
+                      ],
+              ),
+              borderRadius: BorderRadius.circular(2),
             ),
+          ),
+        ],
       ),
     );
   }
@@ -184,41 +219,90 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
     IconData icon,
     ValueChanged<bool> onChanged,
   ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: TColors.containerPrimary.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: TColors.containerPrimary),
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: Theme.of(context).brightness == Brightness.dark ? 6 : 3,
+      shadowColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.black54
+          : Colors.grey.withValues(alpha: 0.3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: SwitchListTile(
-        secondary: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: TColors.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: FaIcon(
-            icon,
-            size: 20,
-            color: TColors.primary,
-          ),
-        ),
-        title: Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? TColors.surfaceDark
+          : Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.primaryDark.withValues(alpha: 0.2)
+                    : TColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? TColors.primaryDark.withValues(alpha: 0.3)
+                      : TColors.primary.withValues(alpha: 0.2),
+                  width: 1,
+                ),
               ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: TColors.textSecondary,
+              child: FaIcon(
+                icon,
+                size: 20,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.primaryDark
+                    : TColors.primary,
               ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? TColors.textPrimaryDark
+                              : TColors.textPrimary,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? TColors.textSecondaryDark
+                              : Colors.grey[600],
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              value: value,
+              onChanged: onChanged,
+              activeColor: Theme.of(context).brightness == Brightness.dark
+                  ? TColors.primaryDark
+                  : TColors.primary,
+              activeTrackColor: Theme.of(context).brightness == Brightness.dark
+                  ? TColors.primaryDark.withValues(alpha: 0.3)
+                  : TColors.primary.withValues(alpha: 0.3),
+              inactiveThumbColor:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[400]
+                      : Colors.grey[300],
+              inactiveTrackColor:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[700]
+                      : Colors.grey[300],
+            ),
+          ],
         ),
-        value: value,
-        onChanged: onChanged,
-        activeColor: TColors.primary,
       ),
     );
   }
@@ -230,44 +314,74 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
     Color color,
     VoidCallback onTap,
   ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: Theme.of(context).brightness == Brightness.dark ? 6 : 3,
+      shadowColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.black54
+          : Colors.grey.withValues(alpha: 0.3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: FaIcon(
-            icon,
-            size: 20,
-            color: color,
-          ),
-        ),
-        title: Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: TColors.textSecondary,
-              ),
-        ),
-        trailing: Icon(
-          Icons.chevron_right,
-          color: color,
-        ),
+      color: Theme.of(context).brightness == Brightness.dark
+          ? TColors.surfaceDark
+          : Colors.white,
+      child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: color.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: FaIcon(
+                  icon,
+                  size: 20,
+                  color: color,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: color,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.textSecondaryDark
+                                    : Colors.grey[600],
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: color,
+                size: 24,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

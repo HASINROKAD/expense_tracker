@@ -19,35 +19,50 @@ class SettingTileWidget extends StatelessWidget {
           ),
         );
       },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            height: 35,
-            width: 35,
-            margin: const EdgeInsets.only(bottom: 8),
-            decoration: BoxDecoration(
-              color: TColors.containerPrimary,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: FittedBox(
-                fit: BoxFit.contain,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.primaryDark.withValues(alpha: 0.2)
+                    : TColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? TColors.primaryDark.withValues(alpha: 0.3)
+                      : TColors.primary.withValues(alpha: 0.2),
+                  width: 1,
+                ),
+              ),
+              child: Center(
                 child: settingTile.icon,
               ),
-            ), // Use the icon
-          ),
-          const SizedBox(width: 10),
-          SizedBox(
-            height: 35,
-            child: Text(
-              settingTile.title,
-              style: Theme.of(context).textTheme.titleMedium,
             ),
-          ),
-          const Spacer(),
-          Icon(Icons.chevron_right_outlined),
-        ],
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                settingTile.title,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? TColors.textPrimaryDark
+                          : TColors.textPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_outlined,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? TColors.textSecondaryDark
+                  : TColors.textSecondary,
+              size: 20,
+            ),
+          ],
+        ),
       ),
     );
   }

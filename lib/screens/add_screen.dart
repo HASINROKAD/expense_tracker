@@ -69,9 +69,11 @@ class AddScreenState extends State<AddScreen> {
       await _dataManager.deleteTransaction(transaction.id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Transaction deleted successfully.'),
-            backgroundColor: TColors.primary,
+          SnackBar(
+            content: const Text('Transaction deleted successfully.'),
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? TColors.primaryDark
+                : TColors.primary,
           ),
         );
       }
@@ -96,9 +98,11 @@ class AddScreenState extends State<AddScreen> {
           title: const Text('Confirm Delete'),
           content:
               const Text('Are you sure you want to delete this transaction?'),
-          backgroundColor: TColors.containerSecondary,
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? TColors.surfaceDark
+              : TColors.containerSecondary,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(16),
           ),
           actions: [
             TextButton(
@@ -106,7 +110,9 @@ class AddScreenState extends State<AddScreen> {
                 Navigator.of(context).pop(); // Close dialog
               },
               style: TextButton.styleFrom(
-                foregroundColor: TColors.secondary,
+                foregroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.textSecondaryDark
+                    : TColors.secondary,
                 textStyle: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -137,35 +143,52 @@ class AddScreenState extends State<AddScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Column(
           children: [
             const SizedBox(height: 10),
             Expanded(
               child: _isLoading
-                  ? const Center(
+                  ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(TColors.primary),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? TColors.primaryDark
+                                  : TColors.primary,
+                            ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Text(
-                            'Loading...',
+                            'Loading transactions...',
                             style: TextStyle(
                               fontSize: 16,
-                              color: TColors.primary,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? TColors.primaryDark
+                                  : TColors.primary,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
                       ),
                     )
                   : _dataManager.transactions.isEmpty
-                      ? const Center(
-                          child: Text('Add your first Income or Expense.'),
+                      ? Center(
+                          child: Text(
+                            'Add your first Income or Expense.',
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? TColors.textSecondaryDark
+                                  : TColors.textSecondary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         )
                       : ListView.builder(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -174,15 +197,37 @@ class AddScreenState extends State<AddScreen> {
                             final transaction =
                                 _dataManager.transactions[index];
                             return Card(
-                              elevation: 3,
+                              elevation: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? 8
+                                  : 3,
                               margin: const EdgeInsets.symmetric(vertical: 8),
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? TColors.surfaceDark
+                                  : Colors.white,
+                              shadowColor: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.black54
+                                  : Colors.grey.withValues(alpha: 0.3),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
+                                borderRadius: BorderRadius.circular(16),
+                                side: BorderSide(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? TColors.borderDark
+                                          .withValues(alpha: 0.3)
+                                      : Colors.grey.withValues(alpha: 0.1),
+                                  width: 1,
+                                ),
                               ),
                               child: Dismissible(
                                 key: Key(transaction.id),
                                 background: Container(
-                                  color: TColors.containerTertiary,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? TColors.primaryDark
+                                      : TColors.containerTertiary,
                                   alignment: Alignment.centerLeft,
                                   padding: const EdgeInsets.only(left: 20),
                                   child: const Row(
@@ -244,46 +289,96 @@ class AddScreenState extends State<AddScreen> {
                                   }
                                 },
                                 child: ListTile(
-                                  tileColor: Color(0xFFF6f6f6),
-                                  contentPadding: const EdgeInsets.all(8),
-                                  leading: Icon(
-                                    transaction.isIncome
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    color: transaction.isIncome
-                                        ? Colors.green
-                                        : Colors.red,
+                                  tileColor: Colors.transparent,
+                                  contentPadding: const EdgeInsets.all(16),
+                                  leading: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: transaction.isIncome
+                                          ? Colors.green.withValues(alpha: 0.1)
+                                          : Colors.red.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: transaction.isIncome
+                                            ? Colors.green
+                                                .withValues(alpha: 0.3)
+                                            : Colors.red.withValues(alpha: 0.3),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      transaction.isIncome
+                                          ? Icons.trending_up_rounded
+                                          : Icons.trending_down_rounded,
+                                      color: transaction.isIncome
+                                          ? Colors.green[600]
+                                          : Colors.red[600],
+                                      size: 24,
+                                    ),
                                   ),
                                   title: Text(
                                     transaction.title,
-                                    style:
-                                        Theme.of(context).textTheme.titleMedium,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? TColors.textPrimaryDark
+                                              : TColors.textPrimary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                   ),
                                   subtitle: Text(
                                     '${transaction.date.day}/${transaction.date.month}/${transaction.date.year}',
                                     style: Theme.of(context)
                                         .textTheme
                                         .labelMedium
-                                        ?.copyWith(color: Colors.black54),
+                                        ?.copyWith(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? TColors.textSecondaryDark
+                                              : Colors.black54,
+                                        ),
                                   ),
                                   trailing: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                      Text(
-                                        transaction.category,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelMedium
-                                            ?.copyWith(color: Colors.black54),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? TColors.containerPrimaryDark
+                                              : Colors.grey[100],
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          transaction.category,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelSmall
+                                              ?.copyWith(
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? TColors.textSecondaryDark
+                                                    : Colors.black54,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                        ),
                                       ),
+                                      const SizedBox(height: 4),
                                       Text(
                                         '${transaction.isIncome ? '+' : '-'}₹${transaction.amount.toStringAsFixed(2)}',
                                         style: TextStyle(
-                                          fontSize: 14,
+                                          fontSize: 16,
                                           color: transaction.isIncome
-                                              ? Colors.green
-                                              : Colors.red,
+                                              ? Colors.green[600]
+                                              : Colors.red[600],
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -301,90 +396,136 @@ class AddScreenState extends State<AddScreen> {
               children: [
                 // Add Income Card
                 Card(
-                  elevation: 5,
+                  elevation:
+                      Theme.of(context).brightness == Brightness.dark ? 8 : 5,
+                  shadowColor: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.black54
+                      : Colors.grey.withValues(alpha: 0.3),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AddIncomeScreen(),
-                        ),
-                      ).then((_) =>
-                          _dataManager.refreshData()); // Refresh after adding
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: TColors.containerTertiary,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 32, vertical: 5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.green.withValues(alpha: 0.1),
+                          Colors.green.withValues(alpha: 0.05),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      border: Border.all(
+                        color: Colors.green.withValues(alpha: 0.3),
+                        width: 1,
                       ),
                     ),
-                    child: const Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.add_circle_outline,
-                          size: 36,
-                          color: TColors.textWhite,
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Add Income',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: TColors.textWhite,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AddIncomeScreen(),
                           ),
+                        ).then((_) =>
+                            _dataManager.refreshData()); // Refresh after adding
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 32, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                      ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.trending_up_rounded,
+                            size: 32,
+                            color: Colors.green[600],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Add Income',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.green[700],
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 10),
                 // Add Expense Card
                 Card(
-                  elevation: 5,
+                  elevation:
+                      Theme.of(context).brightness == Brightness.dark ? 8 : 5,
+                  shadowColor: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.black54
+                      : Colors.grey.withValues(alpha: 0.3),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AddExpenseScreen(),
-                        ),
-                      ).then((_) =>
-                          _dataManager.refreshData()); // Refresh after adding
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: TColors.secondary,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 32, vertical: 5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.red.withValues(alpha: 0.1),
+                          Colors.red.withValues(alpha: 0.05),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      border: Border.all(
+                        color: Colors.red.withValues(alpha: 0.3),
+                        width: 1,
                       ),
                     ),
-                    child: const Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.remove_circle_outline,
-                          size: 36,
-                          color: TColors.textWhite,
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Add Expense',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: TColors.containerSecondary,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AddExpenseScreen(),
                           ),
+                        ).then((_) =>
+                            _dataManager.refreshData()); // Refresh after adding
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 32, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                      ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.trending_down_rounded,
+                            size: 32,
+                            color: Colors.red[600],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Add Expense',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.red[700],
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

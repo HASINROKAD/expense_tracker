@@ -163,7 +163,9 @@ class EditAddScreenDataState extends State<EditAddScreenData> {
           SnackBar(
             content: Text(
                 '${widget.transactionType == 'income' ? 'Income' : 'Expense'} ${widget.transaction != null ? 'updated' : 'added'} successfully!'),
-            backgroundColor: TColors.primary,
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? TColors.primaryDark
+                : TColors.primary,
           ),
         );
 
@@ -183,7 +185,9 @@ class EditAddScreenDataState extends State<EditAddScreenData> {
               'Error: Failed to ${widget.transaction != null ? 'update' : 'add'} ${widget.transactionType}. $error',
               style: const TextStyle(color: TColors.errorPrimary),
             ),
-            backgroundColor: TColors.primary,
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? TColors.primaryDark
+                : TColors.primary,
           ),
         );
       }
@@ -194,22 +198,28 @@ class EditAddScreenDataState extends State<EditAddScreenData> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: TColors.primary,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? TColors.primaryDark
+            : TColors.primary,
         foregroundColor: TColors.textWhite,
         title: Text(
           widget.transaction != null
               ? 'Edit ${widget.transactionType == 'income' ? 'Income' : 'Expense'}'
               : 'Add ${widget.transactionType == 'income' ? 'Income' : 'Expense'}',
-          style: Theme.of(context)
-              .textTheme
-              .headlineSmall
-              ?.copyWith(color: TColors.textWhite),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: TColors.textWhite,
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ),
       body: _isLoading
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(TColors.primary),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).brightness == Brightness.dark
+                      ? TColors.primaryDark
+                      : TColors.primary,
+                ),
               ),
             )
           : Padding(
@@ -283,7 +293,10 @@ class EditAddScreenDataState extends State<EditAddScreenData> {
                       Center(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: TColors.primary,
+                            backgroundColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.primaryDark
+                                    : TColors.primary,
                             minimumSize: const Size(180, 48),
                             textStyle: const TextStyle(
                               fontSize: 16,

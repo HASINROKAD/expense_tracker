@@ -36,24 +36,50 @@ class _HomeScreenState extends State<MainNavigation> {
     'Settings',
   ];
 
+  // Helper method to get app bar background color based on theme
+  Color _getAppBarBackgroundColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? TColors.primaryDark
+        : TColors.primary;
+  }
+
+  // Helper method to get navigation bar color based on theme
+  Color _getNavigationBarColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? TColors.primaryDark
+        : TColors.primary;
+  }
+
+  // Helper method to get navigation background color based on theme
+  Color _getNavigationBackgroundColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? TColors.backgroundDark
+        : Colors.white;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: TColors.primary,
+        backgroundColor: _getAppBarBackgroundColor(context),
+        foregroundColor: TColors.textWhite,
+        elevation: Theme.of(context).brightness == Brightness.dark ? 8 : 4,
+        shadowColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.black54
+            : Colors.grey.withValues(alpha: 0.3),
         title: Text(
-          style: Theme.of(context)
-              .textTheme
-              .headlineSmall
-              ?.copyWith(color: TColors.textWhite),
           _appBarTitles[_selectedIndex],
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: TColors.textWhite,
+                fontWeight: FontWeight.bold,
+              ),
         ), // Dynamic title based on selected index
         actions: [
           if (_appBarTitles[_selectedIndex] != 'Settings')
             IconButton(
               color: TColors.textWhite,
               iconSize: 20,
-              icon: Icon(FontAwesomeIcons.magnifyingGlass),
+              icon: const Icon(FontAwesomeIcons.magnifyingGlass),
               onPressed: () {
                 // Add search functionality here
               },
@@ -62,15 +88,19 @@ class _HomeScreenState extends State<MainNavigation> {
       ),
       body: _screens[_selectedIndex],
       bottomNavigationBar: CurvedNavigationBar(
-        animationDuration: Duration(milliseconds: 250),
-        backgroundColor: Colors.white,
-        color: TColors.primary,
+        animationDuration: const Duration(milliseconds: 250),
+        backgroundColor: _getNavigationBackgroundColor(context),
+        color: _getNavigationBarColor(context),
+        buttonBackgroundColor: _getNavigationBarColor(context),
+        height: 60,
         items: [
-          Icon(FontAwesomeIcons.clipboardList, color: TColors.textWhite),
-          Icon(FontAwesomeIcons.chartSimple, color: TColors.textWhite),
-          Icon(FontAwesomeIcons.plus, color: TColors.textWhite),
-          Icon(FontAwesomeIcons.calendar, color: TColors.textWhite),
-          Icon(FontAwesomeIcons.gear, color: TColors.textWhite),
+          Icon(FontAwesomeIcons.clipboardList,
+              color: TColors.textWhite, size: 22),
+          Icon(FontAwesomeIcons.chartSimple,
+              color: TColors.textWhite, size: 22),
+          Icon(FontAwesomeIcons.plus, color: TColors.textWhite, size: 24),
+          Icon(FontAwesomeIcons.calendar, color: TColors.textWhite, size: 22),
+          Icon(FontAwesomeIcons.gear, color: TColors.textWhite, size: 22),
         ],
         onTap: (i) {
           setState(() {

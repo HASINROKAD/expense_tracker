@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../utils/constants/colors.dart';
 import '../data/local_data_manager.dart';
 import '../data/user_data_model.dart';
+import '../data/supabase_auth.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -41,14 +42,23 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? TColors.backgroundDark
+          : Colors.grey[50],
       appBar: AppBar(
         title: const Text('Account'),
-        backgroundColor: TColors.primary,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? TColors.primaryDark
+            : TColors.primary,
         foregroundColor: TColors.textWhite,
+        elevation: Theme.of(context).brightness == Brightness.dark ? 8 : 4,
+        shadowColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.black54
+            : Colors.grey.withValues(alpha: 0.3),
         // Edit profile action removed
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -126,277 +136,410 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: TColors.primary,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? TColors.primaryDark
+                      : TColors.primary,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            height: 3,
+            width: 50,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: Theme.of(context).brightness == Brightness.dark
+                    ? [
+                        TColors.primaryDark,
+                        TColors.primaryDark.withValues(alpha: 0.5),
+                      ]
+                    : [
+                        TColors.primary,
+                        TColors.primary.withValues(alpha: 0.5),
+                      ],
+              ),
+              borderRadius: BorderRadius.circular(2),
             ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildProfileCard() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final userData = _dataManager.userData;
+
     return Container(
-      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
         gradient: LinearGradient(
-          colors: [TColors.primary, TColors.secondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
+          colors: isDark
+              ? [
+                  TColors.primaryDark,
+                  TColors.primaryDark.withValues(alpha: 0.9),
+                  TColors.secondaryDark,
+                ]
+              : [
+                  TColors.primary,
+                  TColors.primary.withValues(alpha: 0.9),
+                  TColors.secondary,
+                ],
+          stops: const [0.0, 0.5, 1.0],
         ),
-        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: TColors.primary.withValues(alpha: 0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
+            color: (isDark ? TColors.primaryDark : TColors.primary)
+                .withValues(alpha: 0.3),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
+            spreadRadius: 0,
+          ),
+          BoxShadow(
+            color: (isDark ? TColors.secondaryDark : TColors.secondary)
+                .withValues(alpha: 0.1),
+            blurRadius: 48,
+            offset: const Offset(0, 24),
+            spreadRadius: 0,
           ),
         ],
       ),
-      child: Column(
-        children: [
-          // Main profile section
-          Row(
-            children: [
-              // Enhanced avatar with status indicator
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 45,
-                    backgroundColor: TColors.textWhite.withValues(alpha: 0.2),
-                    child: CircleAvatar(
-                      radius: 42,
-                      backgroundColor: TColors.textWhite,
-                      child: FaIcon(
-                        FontAwesomeIcons.user,
-                        size: 35,
-                        color: TColors.primary,
-                      ),
-                    ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: Stack(
+          children: [
+            // Background pattern overlay
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    colors: [
+                      Colors.white.withValues(alpha: 0.1),
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.1),
+                    ],
+                    stops: const [0.0, 0.5, 1.0],
                   ),
-                  // Verification status indicator
-                  Positioned(
-                    bottom: 2,
-                    right: 2,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors
-                            .green, // Assuming verified since user is logged in
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: TColors.textWhite,
-                          width: 2,
-                        ),
-                      ),
-                      child: FaIcon(
-                        FontAwesomeIcons.check, // Assuming verified
-                        size: 12,
-                        color: TColors.textWhite,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-              const SizedBox(width: 20),
-              // User information
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Name with better typography
-                    Text(
-                      _dataManager.userData?.displayName ?? 'User Name',
-                      style:
-                          Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                color: TColors.textWhite,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.5,
-                              ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Email with icon
-                    Row(
-                      children: [
-                        FaIcon(
-                          FontAwesomeIcons.envelope,
-                          size: 14,
-                          color: TColors.textWhite.withValues(alpha: 0.8),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'user@example.com', // Email from auth, not stored in user data
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color:
-                                      TColors.textWhite.withValues(alpha: 0.9),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        // Email verified badge
-                        Container(
-                          margin: const EdgeInsets.only(left: 8),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.green.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: Colors.green.withValues(alpha: 0.5),
-                            ),
-                          ),
-                          child: Text(
-                            'Verified',
-                            style:
-                                Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: Colors.green[100],
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 10,
-                                    ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    // Phone with icon
-                    Row(
-                      children: [
-                        FaIcon(
-                          FontAwesomeIcons.phone,
-                          size: 14,
-                          color: TColors.textWhite.withValues(alpha: 0.8),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            _dataManager.userData?.formattedPhoneNumber ??
-                                'Not provided',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color:
-                                      TColors.textWhite.withValues(alpha: 0.9),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                          ),
-                        ),
-                        if (_dataManager.userData?.phoneNumber?.isNotEmpty ??
-                            false)
-                          Container(
-                            margin: const EdgeInsets.only(left: 8),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.green.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: Colors.green.withValues(alpha: 0.5),
-                              ),
-                            ),
-                            child: Text(
-                              'Verified',
+            ),
+            // Main content
+            Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                children: [
+                  // Header section with avatar and basic info
+                  Row(
+                    children: [
+                      // Modern avatar design
+                      _buildModernAvatar(),
+                      const SizedBox(width: 24),
+                      // User info
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Name
+                            Text(
+                              userData?.displayName ?? 'User Name',
                               style: Theme.of(context)
                                   .textTheme
-                                  .bodySmall
+                                  .headlineMedium
                                   ?.copyWith(
-                                    color: Colors.green[100],
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 10,
+                                    color: TColors.textWhite,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.3,
+                                    height: 1.2,
                                   ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                      ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 28),
+                  // Contact information section
+                  _buildContactInfo(),
+                  const SizedBox(height: 24),
+                  // Edit Profile button
+                  _buildEditProfileButton(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Modern avatar with enhanced design
+  Widget _buildModernAvatar() {
+    return Container(
+      width: 100,
+      height: 100,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            TColors.textWhite.withValues(alpha: 0.3),
+            TColors.textWhite.withValues(alpha: 0.1),
+            Colors.transparent,
+          ],
+          stops: const [0.0, 0.7, 1.0],
+        ),
+      ),
+      child: Container(
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: TColors.textWhite.withValues(alpha: 0.2),
+          border: Border.all(
+            color: TColors.textWhite.withValues(alpha: 0.4),
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+            ),
+            BoxShadow(
+              color: TColors.textWhite.withValues(alpha: 0.1),
+              blurRadius: 8,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Main icon
+            FaIcon(
+              FontAwesomeIcons.user,
+              size: 36,
+              color: TColors.textWhite,
+            ),
+            // Highlight effect
+            Positioned(
+              top: 12,
+              left: 20,
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: TColors.textWhite.withValues(alpha: 0.8),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: TColors.textWhite.withValues(alpha: 0.6),
+                      blurRadius: 4,
+                      spreadRadius: 1,
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Contact information section
+  Widget _buildContactInfo() {
+    final userData = _dataManager.userData;
+    final client = SupabaseAuth.client();
+    final email = client.auth.currentUser?.email ?? 'user@example.com';
+    final phone = userData?.formattedPhoneNumber;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: TColors.textWhite.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: TColors.textWhite.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          // Email
+          _buildContactItem(
+            icon: FontAwesomeIcons.envelope,
+            label: 'Email',
+            value: email,
+            onTap: () {
+              // Could add email functionality here
+            },
           ),
+          if (phone != null && phone.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            _buildContactItem(
+              icon: FontAwesomeIcons.phone,
+              label: 'Phone',
+              value: phone,
+              onTap: () {
+                // Could add phone functionality here
+              },
+            ),
+          ],
           const SizedBox(height: 16),
-          // Edit Profile Button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _editProfile,
-              icon: const Icon(Icons.edit, color: TColors.textWhite),
-              label: const Text(
-                'Edit Profile',
-                style: TextStyle(
-                  color: TColors.textWhite,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: TColors.textWhite.withValues(alpha: 0.2),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(
-                    color: TColors.textWhite.withValues(alpha: 0.3),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          // Security status bar
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: TColors.textWhite.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: TColors.textWhite.withValues(alpha: 0.2),
-              ),
-            ),
-            child: Row(
-              children: [
-                FaIcon(
-                  FontAwesomeIcons.shield,
-                  size: 16,
-                  color: Colors.orange[300], // 2FA disabled by default
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Enable 2FA for better security', // 2FA disabled by default
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: TColors.textWhite.withValues(alpha: 0.9),
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.2), // 2FA disabled
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'At Risk', // 2FA disabled by default
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.orange[100], // 2FA disabled
-                          fontWeight: FontWeight.w600,
-                          fontSize: 11,
-                        ),
-                  ),
-                ),
-              ],
-            ),
+          _buildContactItem(
+            icon: FontAwesomeIcons.calendar,
+            label: 'Member Since',
+            value: _formatMemberSince(userData?.createdAt),
+            onTap: null,
           ),
         ],
       ),
     );
+  }
+
+  // Individual contact item
+  Widget _buildContactItem({
+    required IconData icon,
+    required String label,
+    required String value,
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: TColors.textWhite.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: FaIcon(
+                icon,
+                size: 16,
+                color: TColors.textWhite.withValues(alpha: 0.9),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: TColors.textWhite.withValues(alpha: 0.7),
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    value,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: TColors.textWhite.withValues(alpha: 0.95),
+                          fontWeight: FontWeight.w600,
+                        ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            if (onTap != null)
+              FaIcon(
+                FontAwesomeIcons.chevronRight,
+                size: 14,
+                color: TColors.textWhite.withValues(alpha: 0.6),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Edit Profile button
+  Widget _buildEditProfileButton() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: TColors.textWhite.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: TColors.textWhite.withValues(alpha: 0.3),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: _editProfile,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FaIcon(
+                  FontAwesomeIcons.pen,
+                  size: 18,
+                  color: TColors.textWhite.withValues(alpha: 0.9),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Edit Profile',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: TColors.textWhite.withValues(alpha: 0.95),
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Format member since date
+  String _formatMemberSince(DateTime? createdAt) {
+    if (createdAt == null) return 'Unknown';
+
+    final now = DateTime.now();
+    final difference = now.difference(createdAt);
+
+    if (difference.inDays < 30) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inDays < 365) {
+      final months = (difference.inDays / 30).floor();
+      return '$months month${months > 1 ? 's' : ''} ago';
+    } else {
+      final years = (difference.inDays / 365).floor();
+      return '$years year${years > 1 ? 's' : ''} ago';
+    }
   }
 
   Widget _buildStatusTile(
@@ -406,89 +549,143 @@ class _AccountScreenState extends State<AccountScreen> {
     Color color,
     VoidCallback? onTap,
   ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: TColors.containerPrimary.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: TColors.containerPrimary),
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: Theme.of(context).brightness == Brightness.dark ? 6 : 3,
+      shadowColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.black54
+          : Colors.grey.withValues(alpha: 0.3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: FaIcon(
-            icon,
-            size: 20,
-            color: color,
-          ),
-        ),
-        title: Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-        ),
-        subtitle: Text(
-          status,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: color,
-                fontWeight: FontWeight.w500,
-              ),
-        ),
-        trailing: onTap != null
-            ? Icon(Icons.chevron_right, color: color)
-            : FaIcon(FontAwesomeIcons.check, color: color, size: 16),
+      color: Theme.of(context).brightness == Brightness.dark
+          ? TColors.surfaceDark
+          : Colors.white,
+      child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: color.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: FaIcon(
+                  icon,
+                  size: 20,
+                  color: color,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.textPrimaryDark
+                                    : TColors.textPrimary,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      status,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: color,
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              if (onTap != null)
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: color,
+                  size: 24,
+                )
+              else
+                FaIcon(
+                  FontAwesomeIcons.check,
+                  color: color,
+                  size: 16,
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildStatsCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: TColors.containerPrimary.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: TColors.containerPrimary),
+    return Card(
+      elevation: Theme.of(context).brightness == Brightness.dark ? 6 : 3,
+      shadowColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.black54
+          : Colors.grey.withValues(alpha: 0.3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildStatItem(
-              'Transactions',
-              _dataManager.getUserStatistics()['totalTransactions'].toString(),
-              FontAwesomeIcons.receipt,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? TColors.surfaceDark
+          : Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Expanded(
+              child: _buildStatItem(
+                'Transactions',
+                _dataManager
+                    .getUserStatistics()['totalTransactions']
+                    .toString(),
+                FontAwesomeIcons.receipt,
+              ),
             ),
-          ),
-          Container(
-            width: 1,
-            height: 50,
-            color: TColors.containerPrimary,
-          ),
-          Expanded(
-            child: _buildStatItem(
-              'Categories',
-              _dataManager.getUserStatistics()['categoriesCreated'].toString(),
-              FontAwesomeIcons.tags,
+            Container(
+              width: 1,
+              height: 50,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? TColors.borderDark
+                  : Colors.grey[300],
             ),
-          ),
-          Container(
-            width: 1,
-            height: 50,
-            color: TColors.containerPrimary,
-          ),
-          Expanded(
-            child: _buildStatItem(
-              'Days Active',
-              _dataManager.getUserStatistics()['daysActive'].toString(),
-              FontAwesomeIcons.calendar,
+            Expanded(
+              child: _buildStatItem(
+                'Categories',
+                _dataManager
+                    .getUserStatistics()['categoriesCreated']
+                    .toString(),
+                FontAwesomeIcons.tags,
+              ),
             ),
-          ),
-        ],
+            Container(
+              width: 1,
+              height: 50,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? TColors.borderDark
+                  : Colors.grey[300],
+            ),
+            Expanded(
+              child: _buildStatItem(
+                'Days Active',
+                _dataManager.getUserStatistics()['daysActive'].toString(),
+                FontAwesomeIcons.calendar,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -496,23 +693,46 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget _buildStatItem(String label, String value, IconData icon) {
     return Column(
       children: [
-        FaIcon(
-          icon,
-          size: 24,
-          color: TColors.primary,
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? TColors.primaryDark.withValues(alpha: 0.2)
+                : TColors.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? TColors.primaryDark.withValues(alpha: 0.3)
+                  : TColors.primary.withValues(alpha: 0.2),
+              width: 1,
+            ),
+          ),
+          child: FaIcon(
+            icon,
+            size: 24,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? TColors.primaryDark
+                : TColors.primary,
+          ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Text(
           value,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: TColors.primary,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.primaryDark
+                    : TColors.primary,
               ),
         ),
+        const SizedBox(height: 4),
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: TColors.textSecondary,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.textSecondaryDark
+                    : Colors.grey[600],
+                fontWeight: FontWeight.w500,
               ),
           textAlign: TextAlign.center,
         ),
@@ -527,44 +747,74 @@ class _AccountScreenState extends State<AccountScreen> {
     Color color,
     VoidCallback onTap,
   ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: Theme.of(context).brightness == Brightness.dark ? 6 : 3,
+      shadowColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.black54
+          : Colors.grey.withValues(alpha: 0.3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: FaIcon(
-            icon,
-            size: 20,
-            color: color,
-          ),
-        ),
-        title: Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: TColors.textSecondary,
-              ),
-        ),
-        trailing: Icon(
-          Icons.chevron_right,
-          color: color,
-        ),
+      color: Theme.of(context).brightness == Brightness.dark
+          ? TColors.surfaceDark
+          : Colors.white,
+      child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: color.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: FaIcon(
+                  icon,
+                  size: 20,
+                  color: color,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: color,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.textSecondaryDark
+                                    : Colors.grey[600],
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: color,
+                size: 24,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -764,162 +1014,447 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final surfaceColor = isDark ? TColors.surfaceDark : Colors.white;
+
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      backgroundColor: Colors.transparent,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Header
-            Row(
-              children: [
-                Icon(Icons.edit, color: TColors.primary, size: 24),
-                const SizedBox(width: 12),
-                Text(
-                  'Edit Profile',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: TColors.primary,
-                      ),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
+        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 650),
+        decoration: BoxDecoration(
+          color: surfaceColor,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.5)
+                  : Colors.grey.withValues(alpha: 0.3),
+              blurRadius: isDark ? 20 : 15,
+              offset: const Offset(0, 10),
+              spreadRadius: isDark ? 2 : 0,
             ),
-            const SizedBox(height: 24),
-
-            // Form
-            Expanded(
-              child: SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      // First Name
-                      TextFormField(
-                        controller: _firstNameController,
-                        decoration: const InputDecoration(
-                          labelText: 'First Name',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.person_outline),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please enter your first name';
-                          }
-                          return null;
-                        },
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Modern Header with gradient
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: isDark
+                        ? [
+                            TColors.primaryDark,
+                            TColors.primaryDark.withValues(alpha: 0.8),
+                          ]
+                        : [
+                            TColors.primary,
+                            TColors.primary.withValues(alpha: 0.8),
+                          ],
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: TColors.textWhite.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      const SizedBox(height: 16),
-
-                      // Last Name
-                      TextFormField(
-                        controller: _lastNameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Last Name',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.person_outline),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please enter your last name';
-                          }
-                          return null;
-                        },
+                      child: FaIcon(
+                        FontAwesomeIcons.userPen,
+                        color: TColors.textWhite,
+                        size: 20,
                       ),
-                      const SizedBox(height: 16),
-
-                      // Username (Optional)
-                      TextFormField(
-                        controller: _userNameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Username (Optional)',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.alternate_email),
-                          helperText: 'Optional username for your account',
-                        ),
-                        validator: (value) {
-                          if (value != null &&
-                              value.trim().isNotEmpty &&
-                              value.trim().length < 3) {
-                            return 'Username must be at least 3 characters';
-                          }
-                          return null;
-                        },
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        'Edit Profile',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: TColors.textWhite,
+                              letterSpacing: 0.3,
+                            ),
                       ),
-                      const SizedBox(height: 16),
-
-                      // Phone Number
-                      TextFormField(
-                        controller: _phoneController,
-                        decoration: const InputDecoration(
-                          labelText: 'Phone Number',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.phone_outlined),
-                          helperText: 'Enter your 10-digit phone number',
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: TColors.textWhite.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: FaIcon(
+                          FontAwesomeIcons.xmark,
+                          color: TColors.textWhite,
+                          size: 18,
                         ),
-                        keyboardType: TextInputType.number,
-                        maxLength: 10,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
+                        padding: const EdgeInsets.all(8),
+                        constraints: const BoxConstraints(
+                          minWidth: 40,
+                          minHeight: 40,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Form Content
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  child: SingleChildScrollView(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          // First Name
+                          _buildModernTextField(
+                            controller: _firstNameController,
+                            label: 'First Name',
+                            icon: FontAwesomeIcons.user,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please enter your first name';
+                              }
+                              return null;
+                            },
+                            isDark: isDark,
+                          ),
+                          const SizedBox(height: 20),
+
+                          // Last Name
+                          _buildModernTextField(
+                            controller: _lastNameController,
+                            label: 'Last Name',
+                            icon: FontAwesomeIcons.user,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please enter your last name';
+                              }
+                              return null;
+                            },
+                            isDark: isDark,
+                          ),
+                          const SizedBox(height: 20),
+
+                          // Username (Optional)
+                          _buildModernTextField(
+                            controller: _userNameController,
+                            label: 'Username',
+                            icon: FontAwesomeIcons.userTag,
+                            isOptional: true,
+                            validator: (value) {
+                              if (value != null &&
+                                  value.trim().isNotEmpty &&
+                                  value.trim().length < 3) {
+                                return 'Username must be at least 3 characters';
+                              }
+                              return null;
+                            },
+                            isDark: isDark,
+                          ),
+                          const SizedBox(height: 20),
+
+                          // Phone Number
+                          _buildModernTextField(
+                            controller: _phoneController,
+                            label: 'Phone Number',
+                            icon: FontAwesomeIcons.mobile,
+                            keyboardType: TextInputType.phone,
+                            isOptional: true,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(10),
+                            ],
+                            validator: (value) {
+                              if (value != null && value.trim().isNotEmpty) {
+                                final phone = value
+                                    .trim()
+                                    .replaceAll(RegExp(r'[^\d]'), '');
+                                if (phone.length != 10) {
+                                  return 'Please enter exactly 10 digits';
+                                }
+                              }
+                              return null;
+                            },
+                            isDark: isDark,
+                          ),
                         ],
-                        validator: (value) {
-                          if (value != null && value.trim().isNotEmpty) {
-                            final phone =
-                                value.trim().replaceAll(RegExp(r'[^\d]'), '');
-                            if (phone.length != 10) {
-                              return 'Please enter exactly 10 digits';
-                            }
-                          }
-                          return null;
-                        },
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 24),
-
-            // Action Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _isSaving ? null : () => Navigator.pop(context),
-                    child: const Text('Cancel'),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _isSaving ? null : _saveProfile,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: TColors.primary,
-                      foregroundColor: TColors.textWhite,
+              // Action Buttons
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? TColors.surfaceDark.withValues(alpha: 0.5)
+                      : Colors.grey.withValues(alpha: 0.05),
+                  border: Border(
+                    top: BorderSide(
+                      color: isDark
+                          ? TColors.textSecondaryDark.withValues(alpha: 0.2)
+                          : TColors.textSecondary.withValues(alpha: 0.2),
+                      width: 1,
                     ),
-                    child: _isSaving
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  TColors.textWhite),
-                            ),
-                          )
-                        : const Text('Save'),
                   ),
                 ),
-              ],
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _buildModernButton(
+                        text: 'Cancel',
+                        onPressed:
+                            _isSaving ? null : () => Navigator.pop(context),
+                        isOutlined: true,
+                        isDark: isDark,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildModernButton(
+                        text: 'Save',
+                        onPressed: _isSaving ? null : _saveProfile,
+                        isLoading: _isSaving,
+                        isDark: isDark,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Modern text field with theme adaptation
+  Widget _buildModernTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required bool isDark,
+    String? helperText,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+    String? Function(String?)? validator,
+    bool isOptional = false,
+  }) {
+    final primaryColor = isDark ? TColors.primaryDark : TColors.primary;
+    final borderColor = isDark
+        ? TColors.textSecondaryDark.withValues(alpha: 0.3)
+        : TColors.textSecondary.withValues(alpha: 0.3);
+
+    // Create the label with optional indicator
+    final displayLabel = isOptional ? '$label (Optional)' : label;
+
+    return Container(
+      decoration: BoxDecoration(
+        color:
+            isDark ? TColors.surfaceDark.withValues(alpha: 0.8) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: borderColor,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.15)
+                : Colors.grey.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        validator: validator,
+        style: TextStyle(
+          color: isDark ? TColors.textPrimaryDark : TColors.textPrimary,
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+        ),
+        decoration: InputDecoration(
+          labelText: displayLabel,
+          helperText: helperText,
+          counterText: '', // Hide the counter for maxLength
+          prefixIcon: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: primaryColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: FaIcon(
+                  icon,
+                  size: 14,
+                  color: primaryColor,
+                ),
+              ),
             ),
-          ],
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: primaryColor, width: 2),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: TColors.errorPrimary, width: 1.5),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: TColors.errorPrimary, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 20,
+          ),
+          labelStyle: TextStyle(
+            color: isDark
+                ? TColors.textSecondaryDark.withValues(alpha: 0.8)
+                : TColors.textSecondary.withValues(alpha: 0.8),
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
+          helperStyle: TextStyle(
+            color: isDark
+                ? TColors.textSecondaryDark.withValues(alpha: 0.7)
+                : TColors.textSecondary.withValues(alpha: 0.7),
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+          ),
+          errorStyle: TextStyle(
+            color: TColors.errorPrimary,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Modern button with theme adaptation
+  Widget _buildModernButton({
+    required String text,
+    required VoidCallback? onPressed,
+    required bool isDark,
+    bool isOutlined = false,
+    bool isLoading = false,
+  }) {
+    final primaryColor = isDark ? TColors.primaryDark : TColors.primary;
+
+    if (isOutlined) {
+      return Container(
+        height: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark
+                ? TColors.textSecondaryDark.withValues(alpha: 0.5)
+                : TColors.textSecondary.withValues(alpha: 0.5),
+            width: 1.5,
+          ),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: onPressed,
+            child: Center(
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: isDark ? TColors.textPrimaryDark : TColors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      height: 50,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: onPressed != null
+              ? [primaryColor, primaryColor.withValues(alpha: 0.8)]
+              : [
+                  (isDark ? TColors.textSecondaryDark : TColors.textSecondary)
+                      .withValues(alpha: 0.3),
+                  (isDark ? TColors.textSecondaryDark : TColors.textSecondary)
+                      .withValues(alpha: 0.2),
+                ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: onPressed != null
+            ? [
+                BoxShadow(
+                  color: primaryColor.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onPressed,
+          child: Center(
+            child: isLoading
+                ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        TColors.textWhite,
+                      ),
+                    ),
+                  )
+                : Text(
+                    text,
+                    style: TextStyle(
+                      color: TColors.textWhite,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+          ),
         ),
       ),
     );

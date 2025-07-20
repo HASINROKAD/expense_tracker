@@ -67,13 +67,22 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? TColors.backgroundDark
+          : Colors.grey[50],
       appBar: AppBar(
         title: const Text('Notifications'),
-        backgroundColor: TColors.primary,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? TColors.primaryDark
+            : TColors.primary,
         foregroundColor: TColors.textWhite,
+        elevation: Theme.of(context).brightness == Brightness.dark ? 8 : 4,
+        shadowColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.black54
+            : Colors.grey.withValues(alpha: 0.3),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -110,7 +119,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               'Overspending Warnings',
               'Warn when exceeding budget',
               _enableOverspendingWarnings,
-              FontAwesomeIcons.exclamation,
+              FontAwesomeIcons.triangleExclamation,
               (value) => setState(() => _enableOverspendingWarnings = value),
               enabled: _enableNotifications,
             ),
@@ -174,7 +183,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 (value) => setState(() => _monthlySummaryDay = value!),
               ),
             const SizedBox(height: 24),
-            const SizedBox(height: 32),
 
             // Save button
             SizedBox(
@@ -190,7 +198,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   ),
                 ),
                 child: const Text(
-                  'Save Notification Settings',
+                  'Save Notifications',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
@@ -202,14 +210,40 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: TColors.primary,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? TColors.primaryDark
+                      : TColors.primary,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            height: 3,
+            width: 50,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: Theme.of(context).brightness == Brightness.dark
+                    ? [
+                        TColors.primaryDark,
+                        TColors.primaryDark.withValues(alpha: 0.5),
+                      ]
+                    : [
+                        TColors.primary,
+                        TColors.primary.withValues(alpha: 0.5),
+                      ],
+              ),
+              borderRadius: BorderRadius.circular(2),
             ),
+          ),
+        ],
       ),
     );
   }
@@ -222,54 +256,128 @@ class _NotificationScreenState extends State<NotificationScreen> {
     ValueChanged<bool> onChanged, {
     bool enabled = true,
   }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: enabled
-            ? TColors.containerPrimary.withValues(alpha: 0.3)
-            : TColors.containerPrimary.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: enabled
-              ? TColors.containerPrimary
-              : TColors.containerPrimary.withValues(alpha: 0.5),
-        ),
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: Theme.of(context).brightness == Brightness.dark ? 6 : 3,
+      shadowColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.black54
+          : Colors.grey.withValues(alpha: 0.3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: SwitchListTile(
-        secondary: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: enabled
-                ? TColors.primary.withValues(alpha: 0.1)
-                : TColors.primary.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: FaIcon(
-            icon,
-            size: 20,
-            color: enabled
-                ? TColors.primary
-                : TColors.primary.withValues(alpha: 0.5),
-          ),
+      color: Theme.of(context).brightness == Brightness.dark
+          ? TColors.surfaceDark
+          : Colors.white,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: enabled
+              ? null
+              : Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[700]!
+                      : Colors.grey[300]!,
+                  width: 1,
+                ),
         ),
-        title: Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: enabled ? null : TColors.textSecondary,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: enabled
+                      ? (Theme.of(context).brightness == Brightness.dark
+                          ? TColors.primaryDark.withValues(alpha: 0.2)
+                          : TColors.primary.withValues(alpha: 0.1))
+                      : (Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[700]!.withValues(alpha: 0.3)
+                          : Colors.grey[300]!.withValues(alpha: 0.5)),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: enabled
+                        ? (Theme.of(context).brightness == Brightness.dark
+                            ? TColors.primaryDark.withValues(alpha: 0.3)
+                            : TColors.primary.withValues(alpha: 0.2))
+                        : (Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[600]!
+                            : Colors.grey[400]!),
+                    width: 1,
+                  ),
+                ),
+                child: FaIcon(
+                  icon,
+                  size: 20,
+                  color: enabled
+                      ? (Theme.of(context).brightness == Brightness.dark
+                          ? TColors.primaryDark
+                          : TColors.primary)
+                      : (Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[500]
+                          : Colors.grey[500]),
+                ),
               ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: enabled
-                    ? TColors.textSecondary
-                    : TColors.textSecondary.withValues(alpha: 0.7),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: enabled
+                                ? (Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? TColors.textPrimaryDark
+                                    : TColors.textPrimary)
+                                : (Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.grey[500]
+                                    : Colors.grey[500]),
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: enabled
+                                ? (Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? TColors.textSecondaryDark
+                                    : Colors.grey[600])
+                                : (Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.grey[600]
+                                    : Colors.grey[400]),
+                          ),
+                    ),
+                  ],
+                ),
               ),
+              Switch(
+                value: enabled ? value : false,
+                onChanged: enabled ? onChanged : null,
+                activeColor: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.primaryDark
+                    : TColors.primary,
+                activeTrackColor:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? TColors.primaryDark.withValues(alpha: 0.3)
+                        : TColors.primary.withValues(alpha: 0.3),
+                inactiveThumbColor:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[400]
+                        : Colors.grey[300],
+                inactiveTrackColor:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[700]
+                        : Colors.grey[300],
+              ),
+            ],
+          ),
         ),
-        value: enabled ? value : false,
-        onChanged: enabled ? onChanged : null,
-        activeColor: TColors.primary,
       ),
     );
   }
@@ -281,42 +389,113 @@ class _NotificationScreenState extends State<NotificationScreen> {
     IconData icon,
     ValueChanged<String?> onChanged,
   ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12, left: 16),
-      decoration: BoxDecoration(
-        color: TColors.containerSecondary.withValues(alpha: 0.3),
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12, left: 20),
+      elevation: Theme.of(context).brightness == Brightness.dark ? 4 : 2,
+      shadowColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.black54
+          : Colors.grey.withValues(alpha: 0.3),
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: TColors.containerSecondary),
       ),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: TColors.secondary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: FaIcon(
-            icon,
-            size: 18,
-            color: TColors.secondary,
-          ),
-        ),
-        title: Text(
-          title,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? TColors.containerPrimaryDark
+          : Colors.grey[50],
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.primaryDark.withValues(alpha: 0.2)
+                    : TColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? TColors.primaryDark.withValues(alpha: 0.3)
+                      : TColors.primary.withValues(alpha: 0.2),
+                  width: 1,
+                ),
               ),
-        ),
-        trailing: DropdownButton<String>(
-          value: selectedValue,
-          onChanged: onChanged,
-          underline: const SizedBox(),
-          items: options.map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
+              child: FaIcon(
+                icon,
+                size: 16,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.primaryDark
+                    : TColors.primary,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              flex: 2,
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? TColors.textPrimaryDark
+                          : TColors.textPrimary,
+                    ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              flex: 3,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? TColors.surfaceDark
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? TColors.borderDark.withValues(alpha: 0.3)
+                        : Colors.grey.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: DropdownButton<String>(
+                  value: selectedValue,
+                  onChanged: onChanged,
+                  underline: const SizedBox(),
+                  isExpanded: true,
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? TColors.textSecondaryDark
+                        : Colors.grey[600],
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? TColors.textPrimaryDark
+                            : TColors.textPrimary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                  dropdownColor: Theme.of(context).brightness == Brightness.dark
+                      ? TColors.surfaceDark
+                      : Colors.white,
+                  items: options.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? TColors.textPrimaryDark
+                                  : TColors.textPrimary,
+                            ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

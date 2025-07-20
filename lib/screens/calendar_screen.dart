@@ -183,25 +183,35 @@ class _CalenderScreenState extends State<CalenderScreen> {
     final double agendaItemHeight = 70.0;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.black // Black background to match navigation bar
+          : Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           // Calendar
           Expanded(
             child: _isLoading
-                ? const Center(
+                ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(TColors.primary),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Theme.of(context).brightness == Brightness.dark
+                                ? TColors.primaryDark
+                                : TColors.primary,
+                          ),
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Text(
-                          'Loading...',
+                          'Loading calendar...',
                           style: TextStyle(
                             fontSize: 16,
-                            color: TColors.primary,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.primaryDark
+                                    : TColors.primary,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -212,31 +222,49 @@ class _CalenderScreenState extends State<CalenderScreen> {
                     initialSelectedDate: DateTime.now(),
                     controller: calendarController,
                     dataSource: TransactionEventDataSource(_transactionEvents),
-                    todayHighlightColor: TColors.tertiary,
-                    todayTextStyle: TextStyle(
+                    todayHighlightColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? TColors.primaryDark
+                            : TColors.tertiary,
+                    todayTextStyle: const TextStyle(
                       color: TColors.textWhite,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
                     selectionDecoration: BoxDecoration(
                       color: Colors.transparent,
-                      border: Border.all(color: TColors.primary, width: 2),
+                      border: Border.all(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? TColors.primaryDark
+                            : TColors.primary,
+                        width: 2,
+                      ),
                       borderRadius: const BorderRadius.all(Radius.circular(12)),
                       shape: BoxShape.rectangle,
                     ),
                     headerStyle: CalendarHeaderStyle(
                       textStyle: TextStyle(
-                        color: TColors.primary,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? TColors.primaryDark
+                            : TColors.primary,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
-                      backgroundColor: TColors.containerSecondary,
+                      backgroundColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? TColors.containerPrimaryDark
+                              : TColors.containerSecondary,
                     ),
                     headerHeight: 50,
                     viewHeaderStyle: ViewHeaderStyle(
-                      backgroundColor: TColors.secondaryFixed,
+                      backgroundColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? TColors.surfaceDark
+                              : TColors.secondaryFixed,
                       dayTextStyle: TextStyle(
-                        color: Colors.black54,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? TColors.textSecondaryDark
+                            : Colors.black54,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -248,40 +276,64 @@ class _CalenderScreenState extends State<CalenderScreen> {
                       showAgenda: true,
                       dayFormat: 'EEE',
                       monthCellStyle: MonthCellStyle(
-                        textStyle: const TextStyle(
-                          color: Colors.black87,
+                        textStyle: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? TColors.textPrimaryDark
+                              : Colors.black87,
                           fontSize: 14,
                           fontWeight: FontWeight.normal,
                         ),
                         backgroundColor: Colors.transparent,
-                        todayBackgroundColor:
-                            TColors.containerSecondary.withValues(alpha: 0.2),
-                        trailingDatesTextStyle:
-                            TextStyle(color: Colors.grey[400]),
-                        leadingDatesTextStyle:
-                            TextStyle(color: Colors.grey[400]),
+                        todayBackgroundColor: Theme.of(context).brightness ==
+                                Brightness.dark
+                            ? TColors.primaryDark.withValues(alpha: 0.2)
+                            : TColors.containerSecondary.withValues(alpha: 0.2),
+                        trailingDatesTextStyle: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.grey[600]
+                              : Colors.grey[400],
+                        ),
+                        leadingDatesTextStyle: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.grey[600]
+                              : Colors.grey[400],
+                        ),
                       ),
                       agendaStyle: AgendaStyle(
-                        backgroundColor: Colors.white,
+                        backgroundColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.black
+                                : Colors.white,
                         appointmentTextStyle: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black87,
                         ),
-                        dateTextStyle: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(color: TColors.primary),
-                        dayTextStyle: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(color: TColors.primary),
+                        dateTextStyle:
+                            Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : TColors.primary,
+                                ),
+                        dayTextStyle:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.grey[400]
+                                      : TColors.primary,
+                                ),
                       ),
                       agendaItemHeight: agendaItemHeight,
                     ),
                     timeSlotViewSettings: TimeSlotViewSettings(
                       timeIntervalHeight: 60,
-                      timeTextStyle: const TextStyle(
-                        color: Colors.black87,
+                      timeTextStyle: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? TColors.textSecondaryDark
+                            : Colors.black87,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -295,18 +347,26 @@ class _CalenderScreenState extends State<CalenderScreen> {
                           calendarAppointmentDetails.appointments.first;
                       return Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.grey[900]
+                              : Colors.white,
                           border: Border.all(
-                            color: Colors.grey[300]!,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.grey[700]!
+                                    : Colors.grey[300]!,
                             width: 1.0,
                           ),
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withValues(alpha: 0.3),
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.black54
+                                  : Colors.grey.withValues(alpha: 0.3),
                               spreadRadius: 1,
-                              blurRadius: 3,
-                              offset: Offset(0, 2),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
@@ -319,7 +379,10 @@ class _CalenderScreenState extends State<CalenderScreen> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.black,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -329,10 +392,10 @@ class _CalenderScreenState extends State<CalenderScreen> {
                               '${event.eventType == 'income' ? '+' : '-'} ${event.category}: ₹${event.amount.toStringAsFixed(2)}',
                               style: TextStyle(
                                 fontSize: 12,
-                                fontWeight: FontWeight.w400,
+                                fontWeight: FontWeight.w500,
                                 color: event.eventType == 'income'
-                                    ? Colors.green[400]
-                                    : Colors.red[400],
+                                    ? Colors.green[600]
+                                    : Colors.red[600],
                               ),
                             ),
                           ],

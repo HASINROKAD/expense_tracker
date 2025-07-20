@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../utils/constants/colors.dart';
-import '../utils/theme_utils.dart';
 import '../data/local_data_manager.dart';
 import '../theme/theme_manager.dart';
 import '../widgets/theme_preview_widget.dart';
@@ -201,10 +200,19 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? TColors.backgroundDark
+          : Colors.grey[50],
       appBar: AppBar(
         title: const Text('Preferences'),
-        backgroundColor: TColors.primary,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? TColors.primaryDark
+            : TColors.primary,
         foregroundColor: TColors.textWhite,
+        elevation: Theme.of(context).brightness == Brightness.dark ? 8 : 4,
+        shadowColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.black54
+            : Colors.grey.withValues(alpha: 0.3),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -262,44 +270,62 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                   const SizedBox(height: 16),
 
                   // Save button
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
+                  Card(
+                    elevation:
+                        Theme.of(context).brightness == Brightness.dark ? 8 : 4,
+                    shadowColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.black54
+                        : Colors.grey.withValues(alpha: 0.3),
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: TColors.primary.withValues(alpha: 0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
                     ),
-                    child: ElevatedButton(
-                      onPressed: _isSaving ? null : _savePreferences,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: TColors.primary,
-                        foregroundColor: TColors.textWhite,
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                          colors: Theme.of(context).brightness ==
+                                  Brightness.dark
+                              ? [
+                                  TColors.primaryDark,
+                                  TColors.primaryDark.withValues(alpha: 0.8),
+                                ]
+                              : [
+                                  TColors.primary,
+                                  TColors.primary.withValues(alpha: 0.8),
+                                ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                        elevation: 0,
                       ),
-                      child: _isSaving
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    TColors.textWhite),
+                      child: ElevatedButton(
+                        onPressed: _isSaving ? null : _savePreferences,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          foregroundColor: TColors.textWhite,
+                          padding: const EdgeInsets.symmetric(vertical: 18),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: _isSaving
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      TColors.textWhite),
+                                ),
+                              )
+                            : const Text(
+                                'Save Preferences',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w600),
                               ),
-                            )
-                          : const Text(
-                              'Save Preferences',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600),
-                            ),
+                      ),
                     ),
                   ),
                 ],
@@ -318,16 +344,28 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
             title,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: TColors.primary,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? TColors.primaryDark
+                      : TColors.primary,
                 ),
           ),
           const SizedBox(height: 8),
           Container(
-            height: 2,
-            width: 40,
+            height: 3,
+            width: 50,
             decoration: BoxDecoration(
-              color: TColors.primary,
-              borderRadius: BorderRadius.circular(1),
+              gradient: LinearGradient(
+                colors: Theme.of(context).brightness == Brightness.dark
+                    ? [
+                        TColors.primaryDark,
+                        TColors.primaryDark.withValues(alpha: 0.5),
+                      ]
+                    : [
+                        TColors.primary,
+                        TColors.primary.withValues(alpha: 0.5),
+                      ],
+              ),
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
         ],
@@ -342,61 +380,122 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
     IconData icon,
     ValueChanged<String?> onChanged,
   ) {
-    return Container(
+    return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      decoration: ThemeUtils.getContainerDecoration(context),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: ThemeUtils.getPrimaryColor(context).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: FaIcon(
-            icon,
-            size: 20,
-            color: ThemeUtils.getPrimaryColor(context),
-          ),
-        ),
-        title: Row(
+      elevation: Theme.of(context).brightness == Brightness.dark ? 6 : 3,
+      shadowColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.black54
+          : Colors.grey.withValues(alpha: 0.3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      color: Theme.of(context).brightness == Brightness.dark
+          ? TColors.surfaceDark
+          : Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 2,
-              child: Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? TColors.primaryDark.withValues(alpha: 0.2)
+                        : TColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? TColors.primaryDark.withValues(alpha: 0.3)
+                          : TColors.primary.withValues(alpha: 0.2),
+                      width: 1,
                     ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              flex: 3,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: ThemeUtils.getContainerColor(context, elevated: true),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: ThemeUtils.getBorderColor(context)),
+                  ),
+                  child: FaIcon(
+                    icon,
+                    size: 18,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? TColors.primaryDark
+                        : TColors.primary,
+                  ),
                 ),
-                child: DropdownButton<String>(
-                  value: selectedValue,
-                  onChanged: onChanged,
-                  underline: const SizedBox(),
-                  isExpanded: true,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  items: options.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
-                        overflow: TextOverflow.ellipsis,
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? TColors.textPrimaryDark
+                              : TColors.textPrimary,
+                        ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? TColors.containerPrimaryDark
+                          : Colors.grey[100],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? TColors.borderDark.withValues(alpha: 0.3)
+                            : Colors.grey.withValues(alpha: 0.3),
+                        width: 1,
                       ),
-                    );
-                  }).toList(),
+                    ),
+                    child: DropdownButton<String>(
+                      value: selectedValue,
+                      onChanged: onChanged,
+                      underline: const SizedBox(),
+                      isExpanded: true,
+                      icon: Icon(
+                        Icons.keyboard_arrow_down,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? TColors.textSecondaryDark
+                            : Colors.grey[600],
+                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.textPrimaryDark
+                                    : TColors.textPrimary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                      dropdownColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? TColors.surfaceDark
+                              : Colors.white,
+                      items: options.map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? TColors.textPrimaryDark
+                                      : TColors.textPrimary,
+                                ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         ),
@@ -411,38 +510,90 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
     IconData icon,
     ValueChanged<bool> onChanged,
   ) {
-    return Container(
+    return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      decoration: ThemeUtils.getContainerDecoration(context),
-      child: SwitchListTile(
-        secondary: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: ThemeUtils.getPrimaryColor(context).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: FaIcon(
-            icon,
-            size: 20,
-            color: ThemeUtils.getPrimaryColor(context),
-          ),
-        ),
-        title: Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+      elevation: Theme.of(context).brightness == Brightness.dark ? 6 : 3,
+      shadowColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.black54
+          : Colors.grey.withValues(alpha: 0.3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      color: Theme.of(context).brightness == Brightness.dark
+          ? TColors.surfaceDark
+          : Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.primaryDark.withValues(alpha: 0.2)
+                    : TColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? TColors.primaryDark.withValues(alpha: 0.3)
+                      : TColors.primary.withValues(alpha: 0.2),
+                  width: 1,
+                ),
               ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: ThemeUtils.getTextColor(context,
-                    importance: TextImportance.secondary),
+              child: FaIcon(
+                icon,
+                size: 20,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.primaryDark
+                    : TColors.primary,
               ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? TColors.textPrimaryDark
+                              : TColors.textPrimary,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? TColors.textSecondaryDark
+                              : Colors.grey[600],
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              value: value,
+              onChanged: onChanged,
+              activeColor: Theme.of(context).brightness == Brightness.dark
+                  ? TColors.primaryDark
+                  : TColors.primary,
+              activeTrackColor: Theme.of(context).brightness == Brightness.dark
+                  ? TColors.primaryDark.withValues(alpha: 0.3)
+                  : TColors.primary.withValues(alpha: 0.3),
+              inactiveThumbColor:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[400]
+                      : Colors.grey[300],
+              inactiveTrackColor:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[700]
+                      : Colors.grey[300],
+            ),
+          ],
         ),
-        value: value,
-        onChanged: onChanged,
-        activeColor: ThemeUtils.getPrimaryColor(context),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../utils/constants/colors.dart';
 
 class DatePicker extends StatefulWidget {
   final DateTime? initialDate; // Optional initial date
@@ -68,7 +69,12 @@ class DatePickerState extends State<DatePicker> {
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: widget.labelText,
-        suffixIcon: const Icon(Icons.calendar_today),
+        suffixIcon: Icon(
+          Icons.calendar_today,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? TColors.primaryDark
+              : TColors.primary,
+        ),
       ),
     );
   }

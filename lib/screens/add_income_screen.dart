@@ -91,14 +91,16 @@ class AddIncomeScreenState extends State<AddIncomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: TColors.primary,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? TColors.primaryDark
+            : TColors.primary,
         foregroundColor: TColors.textWhite,
         title: Text(
           'Add Income',
-          style: Theme.of(context)
-              .textTheme
-              .headlineSmall
-              ?.copyWith(color: TColors.textWhite),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: TColors.textWhite,
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ),
       body: Padding(
@@ -119,10 +121,14 @@ class AddIncomeScreenState extends State<AddIncomeScreen> {
                 TextFormField(
                   controller: amountController,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
                     hintText: 'Example: 1000',
-                    hintStyle: TextStyle(color: TColors.hintTextLight),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? TColors.hintTextDark
+                          : TColors.hintTextLight,
+                    ),
                   ),
                   validator: validateAmount,
                 ),
@@ -138,10 +144,14 @@ class AddIncomeScreenState extends State<AddIncomeScreen> {
                 // Payee Form Field
                 TextFormField(
                   controller: payeeController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
                     hintText: "Payee's name",
-                    hintStyle: TextStyle(color: TColors.hintTextLight),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? TColors.hintTextDark
+                          : TColors.hintTextLight,
+                    ),
                   ),
                   validator: validatePayee,
                 ),
@@ -265,7 +275,10 @@ class AddIncomeScreenState extends State<AddIncomeScreen> {
                 Center(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: TColors.primary,
+                      backgroundColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? TColors.primaryDark
+                              : TColors.primary,
                       minimumSize: const Size(180, 48),
                       textStyle: const TextStyle(
                         fontSize: 16,

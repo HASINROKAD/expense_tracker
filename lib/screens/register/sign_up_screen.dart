@@ -48,6 +48,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.only(
@@ -88,11 +89,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             controller: firstNameController,
                             expands: false,
                             decoration: InputDecoration(
-                              prefixIcon: Icon(FontAwesomeIcons.user),
+                              prefixIcon: Icon(
+                                FontAwesomeIcons.user,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? TColors.primaryDark
+                                    : TColors.primary,
+                              ),
                               labelText: 'First Name',
                               border: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: TColors.primary, width: 2.0),
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? TColors.primaryDark
+                                      : TColors.primary,
+                                  width: 2.0,
+                                ),
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                             ),
@@ -202,8 +214,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          backgroundColor: TColors.containerPrimary,
-                          foregroundColor: TColors.primary,
+                          backgroundColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? TColors.primaryDark
+                                  : TColors.containerPrimary,
+                          foregroundColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? TColors.textWhite
+                                  : TColors.primary,
                         ),
                         onPressed: () async {
                           // var prefs = await SharedPreferences.getInstance();

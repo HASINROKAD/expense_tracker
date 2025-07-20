@@ -247,24 +247,64 @@ class _ChartWidgetState extends State<ChartWidget> {
         : aggregatedData;
   }
 
+  // Helper methods for theme-adaptive colors
+  Color _getPrimaryColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? TColors.primaryDark
+        : TColors.primary;
+  }
+
+  Color _getTextColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? TColors.textPrimaryDark
+        : TColors.textPrimary;
+  }
+
+  Color _getContainerColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? TColors.containerPrimaryDark
+        : TColors.containerPrimary;
+  }
+
+  Color _getSurfaceColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? TColors.surfaceDark
+        : Colors.white;
+  }
+
+  Color _getBorderColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? TColors.borderDark
+        : TColors.containerSecondary;
+  }
+
+  Color _getShadowColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.black54
+        : Colors.grey.withValues(alpha: 0.3);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: _isLoading
-          ? const Center(
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(TColors.primary),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      _getPrimaryColor(context),
+                    ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
-                    'Loading...',
+                    'Loading charts...',
                     style: TextStyle(
                       fontSize: 16,
-                      color: TColors.primary,
+                      color: _getPrimaryColor(context),
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
@@ -281,9 +321,19 @@ class _ChartWidgetState extends State<ChartWidget> {
                       // Dropdown Menu
                       Container(
                         decoration: BoxDecoration(
-                          color: TColors.containerSecondary,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: TColors.primary, width: 1),
+                          color: _getContainerColor(context),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _getBorderColor(context),
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: _getShadowColor(context),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: DropdownButton<String>(
@@ -298,7 +348,7 @@ class _ChartWidgetState extends State<ChartWidget> {
                                     .labelLarge
                                     ?.copyWith(
                                       fontSize: 14,
-                                      color: TColors.primary,
+                                      color: _getPrimaryColor(context),
                                       fontWeight: FontWeight.w500,
                                     ),
                               ),
@@ -311,12 +361,12 @@ class _ChartWidgetState extends State<ChartWidget> {
                               });
                             }
                           },
-                          dropdownColor: TColors.containerSecondary,
+                          dropdownColor: _getSurfaceColor(context),
                           borderRadius: BorderRadius.circular(8),
                           underline: const SizedBox(),
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.arrow_drop_down,
-                            color: TColors.primary,
+                            color: _getPrimaryColor(context),
                           ),
                         ),
                       ),
@@ -325,7 +375,22 @@ class _ChartWidgetState extends State<ChartWidget> {
                         width: 240,
                         child: SegmentedButton<ChartFilter>(
                           style: SegmentedButton.styleFrom(
-                            selectedBackgroundColor: TColors.containerSecondary,
+                            selectedBackgroundColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.primaryDark
+                                    : TColors.containerSecondary,
+                            selectedForegroundColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.textWhite
+                                    : TColors.textPrimary,
+                            foregroundColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.textSecondaryDark
+                                    : TColors.textSecondary,
+                            backgroundColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.containerPrimaryDark
+                                    : Colors.grey[100],
                             textStyle: Theme.of(context)
                                 .textTheme
                                 .labelLarge
@@ -350,6 +415,111 @@ class _ChartWidgetState extends State<ChartWidget> {
                         ),
                       ),
                     ],
+                  ),
+                ),
+                // Average Info Card
+                Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Card(
+                    elevation: 6,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                          colors: [
+                            _getPrimaryColor(context).withValues(alpha: 0.1),
+                            _getPrimaryColor(context).withValues(alpha: 0.05),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        border: Border.all(
+                          color:
+                              _getPrimaryColor(context).withValues(alpha: 0.2),
+                          width: 1,
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: _getPrimaryColor(context)
+                                  .withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              _selectedFilter == ChartFilter.income
+                                  ? Icons.trending_up_rounded
+                                  : Icons.analytics_outlined,
+                              color: _getPrimaryColor(context),
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Average ${_selectedFilter == ChartFilter.income ? 'Income' : 'Expense'}',
+                                  style: TextStyle(
+                                    color: _getTextColor(context),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '₹${_averageAmount.toStringAsFixed(2)}',
+                                  style: TextStyle(
+                                    color: _getPrimaryColor(context),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: _selectedFilter == ChartFilter.income
+                                  ? Colors.green.withValues(alpha: 0.1)
+                                  : Colors.orange.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: _selectedFilter == ChartFilter.income
+                                    ? Colors.green.withValues(alpha: 0.3)
+                                    : Colors.orange.withValues(alpha: 0.3),
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              _selectedFilter == ChartFilter.income
+                                  ? 'Income'
+                                  : 'Expense',
+                              style: TextStyle(
+                                color: _selectedFilter == ChartFilter.income
+                                    ? Colors.green[700]
+                                    : Colors.orange[700],
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 // Charts
@@ -397,21 +567,48 @@ class _ChartWidgetState extends State<ChartWidget> {
   Widget _buildBarChart(BoxConstraints constraints, double chartHeight) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4.0),
-        color: TColors.containerPrimary,
+        borderRadius: BorderRadius.circular(16.0),
+        color: _getSurfaceColor(context),
+        border: Border.all(
+          color: _getBorderColor(context).withValues(alpha: 0.3),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: _getShadowColor(context),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       height: chartHeight.clamp(200.0, 400.0),
       padding: const EdgeInsets.all(8),
       child: SfCartesianChart(
         title: ChartTitle(
-          text: _selectedFilter == ChartFilter.income ? 'Income' : 'Expense',
-          textStyle: Theme.of(context).textTheme.titleMedium,
+          text:
+              '${_selectedFilter == ChartFilter.income ? 'Income' : 'Expense'} Overview',
+          textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: _getPrimaryColor(context),
+                fontWeight: FontWeight.bold,
+              ),
         ),
-        primaryXAxis: const CategoryAxis(
-          labelStyle: TextStyle(color: TColors.primary),
+        primaryXAxis: CategoryAxis(
+          labelStyle: TextStyle(
+            color: _getTextColor(context),
+            fontSize: 12,
+          ),
+          axisLine: AxisLine(color: _getBorderColor(context)),
+          majorTickLines: MajorTickLines(color: _getBorderColor(context)),
         ),
-        primaryYAxis: const NumericAxis(
-          labelStyle: TextStyle(color: TColors.primary),
+        primaryYAxis: NumericAxis(
+          labelStyle: TextStyle(
+            color: _getTextColor(context),
+            fontSize: 12,
+          ),
+          axisLine: AxisLine(color: _getBorderColor(context)),
+          majorTickLines: MajorTickLines(color: _getBorderColor(context)),
+          majorGridLines: MajorGridLines(
+            color: _getBorderColor(context).withValues(alpha: 0.3),
+          ),
         ),
         legend: const Legend(
           isVisible: false, // Remove Series 0 button
@@ -433,7 +630,10 @@ class _ChartWidgetState extends State<ChartWidget> {
             pointColorMapper: (ChartData data, _) => data.color,
             dataLabelSettings: DataLabelSettings(
               isVisible: true,
-              textStyle: Theme.of(context).textTheme.titleMedium,
+              textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: _getTextColor(context),
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
           ),
         ],
@@ -444,19 +644,38 @@ class _ChartWidgetState extends State<ChartWidget> {
   Widget _buildRingChart(BoxConstraints constraints, double chartHeight) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4.0),
-        color: TColors.containerPrimary,
+        borderRadius: BorderRadius.circular(16.0),
+        color: _getSurfaceColor(context),
+        border: Border.all(
+          color: _getBorderColor(context).withValues(alpha: 0.3),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: _getShadowColor(context),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       height: chartHeight.clamp(240.0, 480.0),
       padding: const EdgeInsets.all(8),
       child: SfCircularChart(
         title: ChartTitle(
-          text: _selectedFilter == ChartFilter.income ? 'Income' : 'Expense',
-          textStyle: Theme.of(context).textTheme.titleMedium,
+          text:
+              '${_selectedFilter == ChartFilter.income ? 'Income' : 'Expense'} Distribution',
+          textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: _getPrimaryColor(context),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         legend: Legend(
           isVisible: true,
-          textStyle: TextStyle(color: TColors.primary),
+          textStyle: TextStyle(
+            color: _getTextColor(context),
+            fontSize: 12,
+          ),
+          position: LegendPosition.bottom,
+          overflowMode: LegendItemOverflowMode.wrap,
         ),
         tooltipBehavior: TooltipBehavior(
           enable: true,
@@ -466,18 +685,7 @@ class _ChartWidgetState extends State<ChartWidget> {
           borderWidth: 1,
           color: TColors.hintTextLight,
         ),
-        annotations: [
-          CircularChartAnnotation(
-            widget: Text(
-              'Avg: ₹${_averageAmount.toStringAsFixed(2)}',
-              style: TextStyle(
-                color: TColors.primary,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
+        annotations: [],
         series: [
           DoughnutSeries<ChartData, String>(
             dataSource: _getFilteredChartData(forBarChart: false),
@@ -495,13 +703,17 @@ class _ChartWidgetState extends State<ChartWidget> {
             dataLabelSettings: DataLabelSettings(
               isVisible: true,
               labelPosition: ChartDataLabelPosition.outside,
-              textStyle: Theme.of(context).textTheme.titleMedium,
+              textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: _getTextColor(context),
+                    fontWeight: FontWeight.w500,
+                  ),
               labelIntersectAction: LabelIntersectAction.shift,
-              useSeriesColor: true,
+              useSeriesColor: false,
             ),
             explode: true,
-            strokeWidth: 1.0,
-            strokeColor: TColors.primary,
+            explodeOffset: '5%',
+            strokeWidth: 2.0,
+            strokeColor: _getSurfaceColor(context),
           ),
         ],
       ),
