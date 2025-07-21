@@ -36,7 +36,9 @@ class ThemePreviewWidget extends StatelessWidget {
                   child: Icon(
                     Icons.palette,
                     size: 20,
-                    color: ThemeUtils.getPrimaryColor(context),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? TColors.textWhite
+                        : ThemeUtils.getPrimaryColor(context),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -174,7 +176,11 @@ class ThemePreviewWidget extends StatelessWidget {
                 Icon(
                   theme.icon,
                   size: 16,
-                  color: isSelected ? TColors.primary : Colors.grey[600],
+                  color: isSelected
+                      ? TColors.primary
+                      : (Theme.of(context).brightness == Brightness.dark
+                          ? TColors.textWhite
+                          : Colors.grey[600]),
                 ),
                 const SizedBox(height: 4),
                 Text(

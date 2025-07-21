@@ -417,7 +417,7 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                     icon,
                     size: 18,
                     color: Theme.of(context).brightness == Brightness.dark
-                        ? TColors.primaryDark
+                        ? TColors.textWhite
                         : TColors.primary,
                   ),
                 ),
@@ -460,7 +460,7 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                       icon: Icon(
                         Icons.keyboard_arrow_down,
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? TColors.textSecondaryDark
+                            ? TColors.textWhite
                             : Colors.grey[600],
                       ),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -544,7 +544,7 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                 icon,
                 size: 20,
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? TColors.primaryDark
+                    ? TColors.textWhite
                     : TColors.primary,
               ),
             ),
@@ -586,11 +586,11 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
               inactiveThumbColor:
                   Theme.of(context).brightness == Brightness.dark
                       ? Colors.grey[400]
-                      : Colors.grey[300],
+                      : Colors.grey[600],
               inactiveTrackColor:
                   Theme.of(context).brightness == Brightness.dark
                       ? Colors.grey[700]
-                      : Colors.grey[300],
+                      : Colors.grey[400],
             ),
           ],
         ),

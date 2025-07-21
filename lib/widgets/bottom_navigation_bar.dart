@@ -75,7 +75,8 @@ class _HomeScreenState extends State<MainNavigation> {
               ),
         ), // Dynamic title based on selected index
         actions: [
-          if (_appBarTitles[_selectedIndex] != 'Settings')
+          if (_appBarTitles[_selectedIndex] != 'Settings' &&
+              _appBarTitles[_selectedIndex] != 'Calender')
             IconButton(
               color: TColors.textWhite,
               iconSize: 20,

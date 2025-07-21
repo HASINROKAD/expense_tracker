@@ -32,7 +32,7 @@ class TColors {
 
   // -- Dark Theme -- //
   //App Basic Colors dark theme
-  static const Color primaryDark = Color(0xFF4A9B96);
+  static const Color primaryDark = Color(0xFF1A3A3A);
   static const Color secondaryDark = Color(0xFF1A5555);
   static const Color tertiaryDark = Color(0xFF4A4A4A);
 

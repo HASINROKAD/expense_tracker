@@ -311,7 +311,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   size: 20,
                   color: enabled
                       ? (Theme.of(context).brightness == Brightness.dark
-                          ? TColors.primaryDark
+                          ? TColors.textWhite
                           : TColors.primary)
                       : (Theme.of(context).brightness == Brightness.dark
                           ? Colors.grey[500]
@@ -369,11 +369,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 inactiveThumbColor:
                     Theme.of(context).brightness == Brightness.dark
                         ? Colors.grey[400]
-                        : Colors.grey[300],
+                        : Colors.grey[600],
                 inactiveTrackColor:
                     Theme.of(context).brightness == Brightness.dark
                         ? Colors.grey[700]
-                        : Colors.grey[300],
+                        : Colors.grey[400],
               ),
             ],
           ),
@@ -423,7 +423,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 icon,
                 size: 16,
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? TColors.primaryDark
+                    ? TColors.textWhite
                     : TColors.primary,
               ),
             ),
@@ -466,7 +466,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   icon: Icon(
                     Icons.keyboard_arrow_down,
                     color: Theme.of(context).brightness == Brightness.dark
-                        ? TColors.textSecondaryDark
+                        ? TColors.textWhite
                         : Colors.grey[600],
                   ),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(

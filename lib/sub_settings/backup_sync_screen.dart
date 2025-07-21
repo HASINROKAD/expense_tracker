@@ -26,7 +26,7 @@ class _BackupSyncScreenState extends State<BackupSyncScreen> {
   final String _lastSyncTime = '2 hours ago';
 
   // Backup status
-  String _lastBackupDate = 'March 10, 2024';
+  String _lastBackupDate = 'March 10, 2025';
   String _lastBackupSize = '2.4 MB';
   bool _backupInProgress = false;
   double _backupProgress = 0.0;
@@ -61,17 +61,15 @@ class _BackupSyncScreenState extends State<BackupSyncScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Backup & Sync'),
-        backgroundColor: TColors.primary,
+        backgroundColor: isDark ? TColors.primaryDark : TColors.primary,
         foregroundColor: TColors.textWhite,
-        actions: [
-          IconButton(
-            icon: const FaIcon(FontAwesomeIcons.cloudArrowUp),
-            onPressed: _manualBackup,
-          ),
-        ],
+        elevation: 0,
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -148,11 +146,10 @@ class _BackupSyncScreenState extends State<BackupSyncScreen> {
                 FontAwesomeIcons.wifi,
                 (value) => setState(() => _syncOnWiFiOnly = value),
               ),
-              _buildInfoTile(
+              _buildReadOnlyDropdownTile(
                 'Last Sync',
                 _lastSyncTime,
                 FontAwesomeIcons.clockRotateLeft,
-                TColors.primary,
               ),
             ],
             const SizedBox(height: 24),
@@ -227,14 +224,40 @@ class _BackupSyncScreenState extends State<BackupSyncScreen> {
   }
 
   Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: TColors.primary,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? TColors.primaryDark
+                      : TColors.primary,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            height: 3,
+            width: 50,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: Theme.of(context).brightness == Brightness.dark
+                    ? [
+                        TColors.primaryDark,
+                        TColors.primaryDark.withValues(alpha: 0.5),
+                      ]
+                    : [
+                        TColors.primary,
+                        TColors.primary.withValues(alpha: 0.5),
+                      ],
+              ),
+              borderRadius: BorderRadius.circular(2),
             ),
+          ),
+        ],
       ),
     );
   }
@@ -360,41 +383,73 @@ class _BackupSyncScreenState extends State<BackupSyncScreen> {
     IconData icon,
     ValueChanged<bool> onChanged,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = isDark ? TColors.primaryDark : TColors.primary;
+    final surfaceColor = isDark ? TColors.surfaceDark : Colors.white;
+    final textColor = isDark ? TColors.textPrimaryDark : TColors.textPrimary;
+    final subtitleColor =
+        isDark ? TColors.textSecondaryDark : TColors.textSecondary;
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: TColors.containerPrimary.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: TColors.containerPrimary),
+        color: surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? TColors.textSecondaryDark.withValues(alpha: 0.2)
+              : TColors.textSecondary.withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.2)
+                : Colors.grey.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+            spreadRadius: 0,
+          ),
+        ],
       ),
       child: SwitchListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         secondary: Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: TColors.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            color: primaryColor.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: FaIcon(
             icon,
             size: 20,
-            color: TColors.primary,
+            color: isDark ? TColors.textWhite : primaryColor,
           ),
         ),
         title: Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
+                color: textColor,
               ),
         ),
         subtitle: Text(
           subtitle,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: TColors.textSecondary,
+                color: subtitleColor.withValues(alpha: 0.8),
+                height: 1.3,
               ),
         ),
         value: value,
         onChanged: onChanged,
-        activeColor: TColors.primary,
+        activeColor: primaryColor,
+        activeTrackColor: primaryColor.withValues(alpha: 0.3),
+        inactiveThumbColor: isDark
+            ? TColors.textSecondaryDark.withValues(alpha: 0.6)
+            : Colors.grey[600],
+        inactiveTrackColor: isDark
+            ? TColors.textSecondaryDark.withValues(alpha: 0.2)
+            : Colors.grey[400],
       ),
     );
   }
@@ -406,88 +461,178 @@ class _BackupSyncScreenState extends State<BackupSyncScreen> {
     IconData icon,
     ValueChanged<String?> onChanged,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final secondaryColor = isDark ? TColors.secondaryDark : TColors.secondary;
+    final surfaceColor = isDark ? TColors.surfaceDark : Colors.white;
+    final textColor = isDark ? TColors.textPrimaryDark : TColors.textPrimary;
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 12, left: 16),
+      margin: const EdgeInsets.only(bottom: 12, left: 24),
       decoration: BoxDecoration(
-        color: TColors.containerSecondary.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: TColors.containerSecondary),
+        color: surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isDark
+              ? TColors.textSecondaryDark.withValues(alpha: 0.2)
+              : TColors.textSecondary.withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.15)
+                : Colors.grey.withValues(alpha: 0.08),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+            spreadRadius: 0,
+          ),
+        ],
       ),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         leading: Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: TColors.secondary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            color: secondaryColor.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(10),
           ),
           child: FaIcon(
             icon,
-            size: 18,
-            color: TColors.secondary,
+            size: 16,
+            color: isDark ? TColors.textWhite : secondaryColor,
           ),
         ),
         title: Text(
           title,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w600,
+                color: textColor,
               ),
         ),
-        trailing: DropdownButton<String>(
-          value: selectedValue,
-          onChanged: onChanged,
-          underline: const SizedBox(),
-          items: options.map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
+        trailing: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: isDark
+                ? TColors.textSecondaryDark.withValues(alpha: 0.1)
+                : TColors.textSecondary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isDark
+                  ? TColors.textSecondaryDark.withValues(alpha: 0.3)
+                  : TColors.textSecondary.withValues(alpha: 0.3),
+              width: 1,
+            ),
+          ),
+          child: DropdownButton<String>(
+            value: selectedValue,
+            onChanged: onChanged,
+            underline: const SizedBox(),
+            isDense: true,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+            dropdownColor: surfaceColor,
+            items: options.map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildInfoTile(
+  // Read-only dropdown tile that looks like a dropdown but displays info
+  Widget _buildReadOnlyDropdownTile(
     String title,
     String value,
     IconData icon,
-    Color color,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final secondaryColor = isDark ? TColors.secondaryDark : TColors.secondary;
+    final surfaceColor = isDark ? TColors.surfaceDark : Colors.white;
+    final textColor = isDark ? TColors.textPrimaryDark : TColors.textPrimary;
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 12, left: 16),
+      margin: const EdgeInsets.only(bottom: 12, left: 24),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        color: surfaceColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isDark
+              ? TColors.textSecondaryDark.withValues(alpha: 0.2)
+              : TColors.textSecondary.withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.15)
+                : Colors.grey.withValues(alpha: 0.08),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+            spreadRadius: 0,
+          ),
+        ],
       ),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         leading: Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
+            color: secondaryColor.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(10),
           ),
           child: FaIcon(
             icon,
-            size: 18,
-            color: color,
+            size: 16,
+            color: isDark ? TColors.textWhite : secondaryColor,
           ),
         ),
         title: Text(
           title,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w600,
+                color: textColor,
               ),
         ),
-        trailing: Text(
-          value,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: color,
-                fontWeight: FontWeight.w600,
-              ),
+        trailing: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: isDark
+                ? TColors.textSecondaryDark.withValues(alpha: 0.1)
+                : TColors.textSecondary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isDark
+                  ? TColors.textSecondaryDark.withValues(alpha: 0.3)
+                  : TColors.textSecondary.withValues(alpha: 0.3),
+              width: 1,
+            ),
+          ),
+          child: Text(
+            value,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
       ),
     );
+  }
+
+  // Helper method to determine if text should be white in dark mode
+  bool _shouldUseWhiteText(String title, IconData icon, Color color) {
+    return title == 'Manual Backup' ||
+        title == 'Export Data' ||
+        title == 'View Backup History' ||
+        title == 'Restore from Backup';
   }
 
   Widget _buildActionTile(
@@ -497,44 +642,109 @@ class _BackupSyncScreenState extends State<BackupSyncScreen> {
     Color color,
     VoidCallback onTap,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final surfaceColor = isDark ? TColors.surfaceDark : Colors.white;
+    final subtitleColor =
+        isDark ? TColors.textSecondaryDark : TColors.textSecondary;
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        color: surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withValues(alpha: 0.3),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.2)
+                : Colors.grey.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+            spreadRadius: 0,
+          ),
+        ],
       ),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: FaIcon(
+                    icon,
+                    size: 20,
+                    color: (icon == FontAwesomeIcons.fileImport ||
+                            (icon == FontAwesomeIcons.trash &&
+                                color == TColors.errorPrimary))
+                        ? color // Keep original colors for import data and delete all backups
+                        : (Theme.of(context).brightness == Brightness.dark
+                            ? TColors.textWhite
+                            : color),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: _shouldUseWhiteText(title, icon, color)
+                                      ? (Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? TColors.textWhite
+                                          : color)
+                                      : color,
+                                ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: subtitleColor.withValues(alpha: 0.8),
+                              height: 1.3,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: FaIcon(
+                    FontAwesomeIcons.chevronRight,
+                    size: 14,
+                    color: (icon == FontAwesomeIcons.fileImport ||
+                            (icon == FontAwesomeIcons.trash &&
+                                color == TColors.errorPrimary))
+                        ? color // Keep original colors for import data and delete all backups
+                        : (Theme.of(context).brightness == Brightness.dark
+                            ? TColors.textWhite
+                            : color),
+                  ),
+                ),
+              ],
+            ),
           ),
-          child: FaIcon(
-            icon,
-            size: 20,
-            color: color,
-          ),
         ),
-        title: Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: TColors.textSecondary,
-              ),
-        ),
-        trailing: Icon(
-          Icons.chevron_right,
-          color: color,
-        ),
-        onTap: onTap,
       ),
     );
   }
@@ -622,30 +832,45 @@ class _BackupSyncScreenState extends State<BackupSyncScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const FaIcon(FontAwesomeIcons.calendar),
-              title: const Text('March 10, 2024'),
+              leading: FaIcon(
+                FontAwesomeIcons.calendar,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.textWhite
+                    : null,
+              ),
+              title: const Text('March 10, 2025'),
               subtitle: const Text('2.4 MB - Complete backup'),
               onTap: () {
                 Navigator.pop(context);
-                _performRestore('March 10, 2024');
+                _performRestore('March 10, 2025');
               },
             ),
             ListTile(
-              leading: const FaIcon(FontAwesomeIcons.calendar),
-              title: const Text('March 9, 2024'),
+              leading: FaIcon(
+                FontAwesomeIcons.calendar,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.textWhite
+                    : null,
+              ),
+              title: const Text('March 9, 2025'),
               subtitle: const Text('2.3 MB - Complete backup'),
               onTap: () {
                 Navigator.pop(context);
-                _performRestore('March 9, 2024');
+                _performRestore('March 9, 2025');
               },
             ),
             ListTile(
-              leading: const FaIcon(FontAwesomeIcons.calendar),
-              title: const Text('March 8, 2024'),
+              leading: FaIcon(
+                FontAwesomeIcons.calendar,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.textWhite
+                    : null,
+              ),
+              title: const Text('March 8, 2025'),
               subtitle: const Text('2.1 MB - Complete backup'),
               onTap: () {
                 Navigator.pop(context);
-                _performRestore('March 8, 2024');
+                _performRestore('March 8, 2025');
               },
             ),
           ],
@@ -678,7 +903,12 @@ class _BackupSyncScreenState extends State<BackupSyncScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const FaIcon(FontAwesomeIcons.fileCsv),
+              leading: FaIcon(
+                FontAwesomeIcons.fileCsv,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.textWhite
+                    : null,
+              ),
               title: const Text('Export as CSV'),
               subtitle: const Text('Spreadsheet format'),
               onTap: () {
@@ -687,7 +917,12 @@ class _BackupSyncScreenState extends State<BackupSyncScreen> {
               },
             ),
             ListTile(
-              leading: const FaIcon(FontAwesomeIcons.fileCode),
+              leading: FaIcon(
+                FontAwesomeIcons.fileCode,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.textWhite
+                    : null,
+              ),
               title: const Text('Export as JSON'),
               subtitle: const Text('Raw data format'),
               onTap: () {
@@ -760,11 +995,11 @@ class _BackupSyncScreenState extends State<BackupSyncScreen> {
           child: ListView(
             shrinkWrap: true,
             children: [
-              _buildHistoryItem('March 10, 2024', '2.4 MB', 'Complete'),
-              _buildHistoryItem('March 9, 2024', '2.3 MB', 'Complete'),
-              _buildHistoryItem('March 8, 2024', '2.1 MB', 'Complete'),
-              _buildHistoryItem('March 7, 2024', '2.0 MB', 'Complete'),
-              _buildHistoryItem('March 6, 2024', '1.9 MB', 'Failed'),
+              _buildHistoryItem('March 10, 2025', '2.4 MB', 'Complete'),
+              _buildHistoryItem('March 9, 2025', '2.3 MB', 'Complete'),
+              _buildHistoryItem('March 8, 2025', '2.1 MB', 'Complete'),
+              _buildHistoryItem('March 7, 2025', '2.0 MB', 'Complete'),
+              _buildHistoryItem('March 6, 2025', '1.9 MB', 'Failed'),
             ],
           ),
         ),

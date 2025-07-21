@@ -253,7 +253,7 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                 icon,
                 size: 20,
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? TColors.primaryDark
+                    ? TColors.textWhite
                     : TColors.primary,
               ),
             ),
@@ -295,11 +295,11 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
               inactiveThumbColor:
                   Theme.of(context).brightness == Brightness.dark
                       ? Colors.grey[400]
-                      : Colors.grey[300],
+                      : Colors.grey[600],
               inactiveTrackColor:
                   Theme.of(context).brightness == Brightness.dark
                       ? Colors.grey[700]
-                      : Colors.grey[300],
+                      : Colors.grey[400],
             ),
           ],
         ),
@@ -346,7 +346,12 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
                 child: FaIcon(
                   icon,
                   size: 20,
-                  color: color,
+                  color: (icon == FontAwesomeIcons.trashCan &&
+                          color == TColors.errorPrimary)
+                      ? color // Keep delete icon red
+                      : (Theme.of(context).brightness == Brightness.dark
+                          ? TColors.textWhite
+                          : color),
                 ),
               ),
               const SizedBox(width: 16),
@@ -376,7 +381,12 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
               ),
               Icon(
                 Icons.chevron_right_rounded,
-                color: color,
+                color: (icon == FontAwesomeIcons.trashCan &&
+                        color == TColors.errorPrimary)
+                    ? color // Keep delete chevron red
+                    : (Theme.of(context).brightness == Brightness.dark
+                        ? TColors.textWhite
+                        : color),
                 size: 24,
               ),
             ],

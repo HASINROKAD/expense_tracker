@@ -338,6 +338,12 @@ class _ChartWidgetState extends State<ChartWidget> {
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: DropdownButton<String>(
                           value: _selectedPeriod,
+                          style:
+                              Theme.of(context).textTheme.labelLarge?.copyWith(
+                                    fontSize: 14,
+                                    color: _getTextColor(context),
+                                    fontWeight: FontWeight.w500,
+                                  ),
                           items: _periodOptions.map((String period) {
                             return DropdownMenuItem<String>(
                               value: period,
@@ -348,7 +354,7 @@ class _ChartWidgetState extends State<ChartWidget> {
                                     .labelLarge
                                     ?.copyWith(
                                       fontSize: 14,
-                                      color: _getPrimaryColor(context),
+                                      color: _getTextColor(context),
                                       fontWeight: FontWeight.w500,
                                     ),
                               ),
@@ -366,7 +372,10 @@ class _ChartWidgetState extends State<ChartWidget> {
                           underline: const SizedBox(),
                           icon: Icon(
                             Icons.arrow_drop_down,
-                            color: _getPrimaryColor(context),
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.textWhite
+                                    : _getTextColor(context),
                           ),
                         ),
                       ),
@@ -459,7 +468,10 @@ class _ChartWidgetState extends State<ChartWidget> {
                               _selectedFilter == ChartFilter.income
                                   ? Icons.trending_up_rounded
                                   : Icons.analytics_outlined,
-                              color: _getPrimaryColor(context),
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? TColors.textWhite
+                                  : _getPrimaryColor(context),
                               size: 24,
                             ),
                           ),
@@ -587,7 +599,9 @@ class _ChartWidgetState extends State<ChartWidget> {
           text:
               '${_selectedFilter == ChartFilter.income ? 'Income' : 'Expense'} Overview',
           textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: _getPrimaryColor(context),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.textWhite
+                    : _getPrimaryColor(context),
                 fontWeight: FontWeight.bold,
               ),
         ),
@@ -664,7 +678,9 @@ class _ChartWidgetState extends State<ChartWidget> {
           text:
               '${_selectedFilter == ChartFilter.income ? 'Income' : 'Expense'} Distribution',
           textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: _getPrimaryColor(context),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? TColors.textWhite
+                    : _getPrimaryColor(context),
                 fontWeight: FontWeight.bold,
               ),
         ),

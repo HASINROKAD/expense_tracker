@@ -245,7 +245,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
                     headerStyle: CalendarHeaderStyle(
                       textStyle: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? TColors.primaryDark
+                            ? TColors.textWhite
                             : TColors.primary,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -302,7 +302,7 @@ class _CalenderScreenState extends State<CalenderScreen> {
                       agendaStyle: AgendaStyle(
                         backgroundColor:
                             Theme.of(context).brightness == Brightness.dark
-                                ? Colors.black
+                                ? TColors.backgroundDark
                                 : Colors.white,
                         appointmentTextStyle: TextStyle(
                           fontSize: 14,

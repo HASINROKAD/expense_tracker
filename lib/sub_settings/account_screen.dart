@@ -581,7 +581,12 @@ class _AccountScreenState extends State<AccountScreen> {
                 child: FaIcon(
                   icon,
                   size: 20,
-                  color: color,
+                  color: (icon ==
+                          FontAwesomeIcons.shieldHalved) // Two-factor auth icon
+                      ? color // Keep original color
+                      : (Theme.of(context).brightness == Brightness.dark
+                          ? TColors.textWhite
+                          : color),
                 ),
               ),
               const SizedBox(width: 16),
@@ -613,13 +618,23 @@ class _AccountScreenState extends State<AccountScreen> {
               if (onTap != null)
                 Icon(
                   Icons.chevron_right_rounded,
-                  color: color,
+                  color: (icon ==
+                          FontAwesomeIcons.shieldHalved) // Two-factor auth icon
+                      ? color // Keep original color
+                      : (Theme.of(context).brightness == Brightness.dark
+                          ? TColors.textWhite
+                          : color),
                   size: 24,
                 )
               else
                 FaIcon(
                   FontAwesomeIcons.check,
-                  color: color,
+                  color: (icon ==
+                          FontAwesomeIcons.shieldHalved) // Two-factor auth icon
+                      ? color // Keep original color
+                      : (Theme.of(context).brightness == Brightness.dark
+                          ? TColors.textWhite
+                          : color),
                   size: 16,
                 ),
             ],
@@ -711,7 +726,7 @@ class _AccountScreenState extends State<AccountScreen> {
             icon,
             size: 24,
             color: Theme.of(context).brightness == Brightness.dark
-                ? TColors.primaryDark
+                ? TColors.textWhite
                 : TColors.primary,
           ),
         ),
@@ -779,7 +794,12 @@ class _AccountScreenState extends State<AccountScreen> {
                 child: FaIcon(
                   icon,
                   size: 20,
-                  color: color,
+                  color: (icon == FontAwesomeIcons.trash &&
+                          color == TColors.errorPrimary) // Delete account icon
+                      ? color // Keep original red color
+                      : (Theme.of(context).brightness == Brightness.dark
+                          ? TColors.textWhite
+                          : color),
                 ),
               ),
               const SizedBox(width: 16),
@@ -809,7 +829,12 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
               Icon(
                 Icons.chevron_right_rounded,
-                color: color,
+                color: (icon == FontAwesomeIcons.trash &&
+                        color == TColors.errorPrimary) // Delete account icon
+                    ? color // Keep original red color
+                    : (Theme.of(context).brightness == Brightness.dark
+                        ? TColors.textWhite
+                        : color),
                 size: 24,
               ),
             ],
@@ -1308,7 +1333,9 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
                 child: FaIcon(
                   icon,
                   size: 14,
-                  color: primaryColor,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? TColors.textWhite
+                      : primaryColor,
                 ),
               ),
             ),

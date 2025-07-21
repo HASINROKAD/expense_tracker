@@ -7,11 +7,18 @@ class AboutLegalScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: isDark ? TColors.backgroundDark : Colors.grey[50],
       appBar: AppBar(
         title: const Text('About & Legal'),
-        backgroundColor: TColors.primary,
+        backgroundColor: isDark ? TColors.primaryDark : TColors.primary,
         foregroundColor: TColors.textWhite,
+        elevation: isDark ? 8 : 4,
+        shadowColor:
+            isDark ? Colors.black54 : Colors.grey.withValues(alpha: 0.3),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -34,7 +41,7 @@ class AboutLegalScreen extends StatelessWidget {
             _buildInfoTile(
               context,
               'Release Date',
-              'March 2024',
+              'March 2025',
               FontAwesomeIcons.calendar,
               TColors.primary,
             ),
@@ -165,31 +172,36 @@ class AboutLegalScreen extends StatelessWidget {
               'Supabase',
               FontAwesomeIcons.database,
             ),
-            const SizedBox(height: 32),
 
             // Copyright
             Center(
               child: Column(
                 children: [
                   Text(
-                    '© 2024 Expense Tracker',
+                    '© 2025 Expense Tracker',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: TColors.textSecondary,
+                          color: isDark
+                              ? TColors.textPrimaryDark
+                              : TColors.textPrimary,
                           fontWeight: FontWeight.w600,
                         ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 8),
                   Text(
                     'All rights reserved',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: TColors.textSecondary,
+                          color: isDark
+                              ? TColors.textSecondaryDark.withValues(alpha: 0.8)
+                              : TColors.textSecondary.withValues(alpha: 0.8),
                         ),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Made with ❤️ for better expense tracking',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: TColors.textSecondary,
+                          color: isDark
+                              ? TColors.textSecondaryDark.withValues(alpha: 0.9)
+                              : TColors.textSecondary.withValues(alpha: 0.9),
                           fontStyle: FontStyle.italic,
                         ),
                     textAlign: TextAlign.center,
@@ -204,14 +216,40 @@ class AboutLegalScreen extends StatelessWidget {
   }
 
   Widget _buildSectionHeader(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: TColors.primary,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? TColors.primaryDark : TColors.primary,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            height: 3,
+            width: 50,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: isDark
+                    ? [
+                        TColors.primaryDark,
+                        TColors.primaryDark.withValues(alpha: 0.5),
+                      ]
+                    : [
+                        TColors.primary,
+                        TColors.primary.withValues(alpha: 0.5),
+                      ],
+              ),
+              borderRadius: BorderRadius.circular(2),
             ),
+          ),
+        ],
       ),
     );
   }
@@ -505,16 +543,36 @@ class AboutLegalScreen extends StatelessWidget {
     IconData icon,
     Color color,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final surfaceColor = isDark ? TColors.surfaceDark : Colors.white;
+    final textColor = isDark ? TColors.textPrimaryDark : TColors.textPrimary;
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: TColors.containerPrimary.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: TColors.containerPrimary),
+        color: surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? TColors.textSecondaryDark.withValues(alpha: 0.2)
+              : TColors.textSecondary.withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.2)
+                : Colors.grey.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+            spreadRadius: 0,
+          ),
+        ],
       ),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         leading: Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
@@ -522,19 +580,20 @@ class AboutLegalScreen extends StatelessWidget {
           child: FaIcon(
             icon,
             size: 20,
-            color: color,
+            color: isDark ? TColors.textWhite : color,
           ),
         ),
         title: Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
+                color: textColor,
               ),
         ),
         trailing: Text(
           value,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: color,
+                color: isDark ? TColors.textWhite : color,
                 fontWeight: FontWeight.w600,
               ),
         ),
@@ -550,44 +609,108 @@ class AboutLegalScreen extends StatelessWidget {
     Color color,
     VoidCallback onTap,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final surfaceColor = isDark ? TColors.surfaceDark : Colors.white;
+    final subtitleColor =
+        isDark ? TColors.textSecondaryDark : TColors.textSecondary;
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        color: surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withValues(alpha: 0.3),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.2)
+                : Colors.grey.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+            spreadRadius: 0,
+          ),
+        ],
       ),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.18),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: FaIcon(
+                    icon,
+                    size: 24,
+                    color: (icon == FontAwesomeIcons.star &&
+                            color == Colors.orange)
+                        ? color // Keep Rate App icon original color
+                        : (Theme.of(context).brightness == Brightness.dark
+                            ? TColors.textWhite
+                            : color),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: (icon == FontAwesomeIcons.star &&
+                                          color == Colors.orange)
+                                      ? color // Keep Rate App title original color
+                                      : (Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? TColors.textWhite
+                                          : color),
+                                ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: subtitleColor.withValues(alpha: 0.8),
+                              height: 1.3,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: FaIcon(
+                    FontAwesomeIcons.chevronRight,
+                    size: 14,
+                    color: (icon == FontAwesomeIcons.star &&
+                            color == Colors.orange)
+                        ? color // Keep Rate App chevron original color
+                        : (Theme.of(context).brightness == Brightness.dark
+                            ? TColors.textWhite
+                            : color),
+                  ),
+                ),
+              ],
+            ),
           ),
-          child: FaIcon(
-            icon,
-            size: 20,
-            color: color,
-          ),
         ),
-        title: Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: TColors.textSecondary,
-              ),
-        ),
-        trailing: Icon(
-          Icons.chevron_right,
-          color: color,
-        ),
-        onTap: onTap,
       ),
     );
   }
@@ -622,36 +745,61 @@ class AboutLegalScreen extends StatelessWidget {
     String subtitle,
     IconData icon,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final surfaceColor = isDark ? TColors.surfaceDark : Colors.white;
+    final textColor = isDark ? TColors.textPrimaryDark : TColors.textPrimary;
+    final subtitleColor =
+        isDark ? TColors.textSecondaryDark : TColors.textSecondary;
+    final primaryColor = isDark ? TColors.primaryDark : TColors.primary;
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: TColors.containerPrimary.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: TColors.containerPrimary),
+        color: surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? TColors.textSecondaryDark.withValues(alpha: 0.2)
+              : TColors.textSecondary.withValues(alpha: 0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.2)
+                : Colors.grey.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+            spreadRadius: 0,
+          ),
+        ],
       ),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         leading: Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: TColors.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            color: primaryColor.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: FaIcon(
             icon,
-            size: 20,
-            color: TColors.primary,
+            size: 24,
+            color: isDark ? TColors.textWhite : primaryColor,
           ),
         ),
         title: Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
+                color: textColor,
               ),
         ),
         subtitle: Text(
           subtitle,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: TColors.textSecondary,
+                color: subtitleColor.withValues(alpha: 0.8),
+                height: 1.3,
               ),
         ),
       ),
