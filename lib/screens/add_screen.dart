@@ -147,7 +147,7 @@ class AddScreenState extends State<AddScreen> {
       body: Center(
         child: Column(
           children: [
-            const SizedBox(height: 10),
+            const SizedBox(height: 6),
             Expanded(
               child: _isLoading
                   ? Center(
@@ -344,10 +344,11 @@ class AddScreenState extends State<AddScreen> {
                                   trailing: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.end,
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Container(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
+                                            horizontal: 8, vertical: 2),
                                         decoration: BoxDecoration(
                                           color: Theme.of(context).brightness ==
                                                   Brightness.dark
@@ -371,11 +372,11 @@ class AddScreenState extends State<AddScreen> {
                                               ),
                                         ),
                                       ),
-                                      const SizedBox(height: 4),
+                                      const SizedBox(height: 2),
                                       Text(
                                         '${transaction.isIncome ? '+' : '-'}₹${transaction.amount.toStringAsFixed(2)}',
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 15,
                                           color: transaction.isIncome
                                               ? Colors.green[600]
                                               : Colors.red[600],
@@ -531,7 +532,7 @@ class AddScreenState extends State<AddScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 6),
           ],
         ),
       ),

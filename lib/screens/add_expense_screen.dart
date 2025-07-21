@@ -113,6 +113,7 @@ class AddExpenseScreenState extends State<AddExpenseScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 24.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -284,6 +285,7 @@ class AddExpenseScreenState extends State<AddExpenseScreen> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 16),
               ],
             ),
           ),
