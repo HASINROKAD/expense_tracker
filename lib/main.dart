@@ -52,6 +52,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Expense Tracker',
+      debugShowCheckedModeBanner: false,
       themeMode: _themeManager.themeMode,
       theme: _themeManager.lightTheme,
       darkTheme: _themeManager.darkTheme,
