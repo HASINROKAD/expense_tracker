@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
       theme: _themeManager.lightTheme,
       darkTheme: _themeManager.darkTheme,
       home: AnimatedSplashScreen(
-        splash: 'assets/images/expense_tracker_logo.jpeg',
+        splash: 'assets/images/icon.jpeg',
         splashIconSize: 2000.0,
         centered: true,
         backgroundColor: Colors.white,

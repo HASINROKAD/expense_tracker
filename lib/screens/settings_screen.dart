@@ -91,7 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             child: const CircleAvatar(
                               radius: 50,
                               backgroundImage: AssetImage(
-                                  'assets/images/expense_tracker_logo.jpeg'),
+                                  'assets/images/icon.jpeg'),
                             ),
                           ),
                           const SizedBox(width: 10),

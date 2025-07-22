@@ -61,7 +61,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Image(
                     height: 130,
                     image:
-                        AssetImage('assets/images/expense_tracker_logo.jpeg'),
+                        AssetImage('assets/images/icon.jpeg'),
                   ),
                   Text(
                     ' ExpenseMate',
