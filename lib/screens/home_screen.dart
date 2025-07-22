@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
-                                  ? TColors.primaryDark
+                                  ? const Color.fromARGB(255, 53, 111, 111)
                                   : TColors.primary,
                               fontWeight: FontWeight.bold,
                             ),

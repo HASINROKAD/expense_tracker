@@ -227,7 +227,9 @@ class AboutLegalScreen extends StatelessWidget {
             title,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: isDark ? TColors.primaryDark : TColors.primary,
+                  color: isDark
+                      ? const Color.fromARGB(255, 53, 111, 111)
+                      : TColors.primary,
                 ),
           ),
           const SizedBox(height: 8),

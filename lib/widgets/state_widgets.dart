@@ -66,7 +66,9 @@ class _ChartWidgetState extends State<ChartWidget> {
       );
       setState(() {
         _isLoading = false;
-        _chartData = [ChartData('No Data', 0, Colors.grey, 'Unknown')];
+        _chartData = [
+          ChartData(DateTime.now().toIso8601String(), 0, Colors.grey, 'No Data')
+        ];
         _averageAmount = 0.0;
       });
       return;
@@ -107,11 +109,8 @@ class _ChartWidgetState extends State<ChartWidget> {
       setState(() {
         _chartData = [...incomeData, ...expenseData];
         _isLoading = false;
-        _averageAmount = _chartData.isEmpty
-            ? 0.0
-            : _chartData.fold(0.0, (sum, data) => sum + data.value) /
-                _chartData.length;
       });
+      _updateAverageAmount();
 
       if (_chartData.isEmpty) {
         if (mounted) {
@@ -123,7 +122,10 @@ class _ChartWidgetState extends State<ChartWidget> {
           );
         }
         setState(() {
-          _chartData = [ChartData('No Data', 0, Colors.grey, 'Unknown')];
+          _chartData = [
+            ChartData(
+                DateTime.now().toIso8601String(), 0, Colors.grey, 'No Data')
+          ];
           _averageAmount = 0.0;
         });
       }
@@ -138,7 +140,9 @@ class _ChartWidgetState extends State<ChartWidget> {
       }
       setState(() {
         _isLoading = false;
-        _chartData = [ChartData('No Data', 0, Colors.grey, 'Unknown')];
+        _chartData = [
+          ChartData(DateTime.now().toIso8601String(), 0, Colors.grey, 'No Data')
+        ];
         _averageAmount = 0.0;
       });
     }
@@ -236,21 +240,79 @@ class _ChartWidgetState extends State<ChartWidget> {
       }).toList();
     }
 
-    // Calculate average for filtered data
-    _averageAmount = aggregatedData.isEmpty
-        ? 0.0
-        : aggregatedData.fold(0.0, (sum, data) => sum + data.value) /
-            aggregatedData.length;
+    // Average calculation is now handled separately in _updateAverageAmount()
 
     return aggregatedData.isEmpty
-        ? [ChartData('No Data', 0, Colors.grey, 'Unknown')]
+        ? [
+            ChartData(
+                DateTime.now().toIso8601String(), 0, Colors.grey, 'No Data')
+          ]
         : aggregatedData;
+  }
+
+  // Calculate average amount based on current filter and period
+  void _updateAverageAmount() {
+    List<ChartData> filteredData = _chartData;
+
+    // Filter by Income/Expense
+    if (_selectedFilter == ChartFilter.income) {
+      filteredData = filteredData
+          .where((data) => data.color == Colors.green[400])
+          .toList();
+    } else if (_selectedFilter == ChartFilter.expense) {
+      filteredData =
+          filteredData.where((data) => data.color == Colors.red[400]).toList();
+    }
+
+    // Filter by time period
+    final now = DateTime.now();
+    final startOfYear = DateTime(now.year, 1, 1);
+    final startOfMonth = DateTime(now.year, now.month, 1);
+    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+
+    if (_selectedPeriod == 'This Year') {
+      filteredData = filteredData.where((data) {
+        try {
+          final date = DateTime.parse(data.date);
+          return date.isAfter(startOfYear) ||
+              date.isAtSameMomentAs(startOfYear);
+        } catch (e) {
+          return false; // Skip invalid dates
+        }
+      }).toList();
+    } else if (_selectedPeriod == 'This Month') {
+      filteredData = filteredData.where((data) {
+        try {
+          final date = DateTime.parse(data.date);
+          return date.isAfter(startOfMonth) ||
+              date.isAtSameMomentAs(startOfMonth);
+        } catch (e) {
+          return false; // Skip invalid dates
+        }
+      }).toList();
+    } else if (_selectedPeriod == 'This Week') {
+      filteredData = filteredData.where((data) {
+        try {
+          final date = DateTime.parse(data.date);
+          return date.isAfter(startOfWeek) ||
+              date.isAtSameMomentAs(startOfWeek);
+        } catch (e) {
+          return false; // Skip invalid dates
+        }
+      }).toList();
+    }
+
+    // Calculate average for filtered data
+    _averageAmount = filteredData.isEmpty
+        ? 0.0
+        : filteredData.fold(0.0, (sum, data) => sum + data.value) /
+            filteredData.length;
   }
 
   // Helper methods for theme-adaptive colors
   Color _getPrimaryColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark
-        ? TColors.primaryDark
+        ? const Color.fromARGB(255, 53, 111, 111)
         : TColors.primary;
   }
 
@@ -364,6 +426,7 @@ class _ChartWidgetState extends State<ChartWidget> {
                             if (newValue != null) {
                               setState(() {
                                 _selectedPeriod = newValue;
+                                _updateAverageAmount();
                               });
                             }
                           },
@@ -419,6 +482,7 @@ class _ChartWidgetState extends State<ChartWidget> {
                           onSelectionChanged: (Set<ChartFilter> newSelection) {
                             setState(() {
                               _selectedFilter = newSelection.first;
+                              _updateAverageAmount();
                             });
                           },
                         ),
@@ -638,8 +702,16 @@ class _ChartWidgetState extends State<ChartWidget> {
         series: [
           ColumnSeries<ChartData, String>(
             dataSource: _getFilteredChartData(forBarChart: true),
-            xValueMapper: (ChartData data, _) =>
-                DateFormat('MMM dd').format(DateTime.parse(data.date)),
+            xValueMapper: (ChartData data, _) {
+              try {
+                if (data.category == 'No Data') {
+                  return 'No Data';
+                }
+                return DateFormat('MMM dd').format(DateTime.parse(data.date));
+              } catch (e) {
+                return 'Invalid Date';
+              }
+            },
             yValueMapper: (ChartData data, _) => data.value,
             pointColorMapper: (ChartData data, _) => data.color,
             dataLabelSettings: DataLabelSettings(

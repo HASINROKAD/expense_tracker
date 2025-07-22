@@ -74,18 +74,6 @@ class _HomeScreenState extends State<MainNavigation> {
                 fontWeight: FontWeight.bold,
               ),
         ), // Dynamic title based on selected index
-        actions: [
-          if (_appBarTitles[_selectedIndex] != 'Settings' &&
-              _appBarTitles[_selectedIndex] != 'Calender')
-            IconButton(
-              color: TColors.textWhite,
-              iconSize: 20,
-              icon: const Icon(FontAwesomeIcons.magnifyingGlass),
-              onPressed: () {
-                // Add search functionality here
-              },
-            ),
-        ],
       ),
       body: _screens[_selectedIndex],
       bottomNavigationBar: CurvedNavigationBar(

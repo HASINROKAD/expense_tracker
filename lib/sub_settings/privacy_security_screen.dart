@@ -184,7 +184,7 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).brightness == Brightness.dark
-                      ? TColors.primaryDark
+                      ? const Color.fromARGB(255, 53, 111, 111)
                       : TColors.primary,
                 ),
           ),
