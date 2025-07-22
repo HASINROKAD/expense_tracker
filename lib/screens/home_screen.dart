@@ -196,116 +196,128 @@ class _HomeScreenState extends State<HomeScreen> {
                       yearToDateExpense: metrics?.yearToDateExpense ?? 0.0,
                       todayExpense: metrics?.todayExpense ?? 0.0,
                     ),
-              const SizedBox(height: 16),
-              // Dropdown and Segmented Button Row
+
               Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? TColors.containerPrimaryDark
-                          : TColors.containerPrimary,
-                      borderRadius: BorderRadius.circular(10.0),
-                      border: Border.all(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? TColors.borderDark
-                            : TColors.containerSecondary,
-                      ),
-                    ),
-                    child: DropdownButton<String>(
-                      dropdownColor:
-                          Theme.of(context).brightness == Brightness.dark
-                              ? TColors.surfaceDark
-                              : TColors.containerSecondary,
-                      menuMaxHeight: 200,
-                      underline: Container(),
-                      borderRadius: BorderRadius.circular(10.0),
-                      elevation: 2,
-                      style: DropdownStyle.getDropdownMenuItemStyle().copyWith(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? TColors.textPrimaryDark
-                            : TColors.textPrimary,
-                      ),
-                      value: _selectedItem,
-                      items: _items.map((String item) {
-                        return DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: DropdownStyle.getDropdownMenuItemStyle()
-                                .copyWith(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? TColors.textPrimaryDark
-                                  : TColors.textPrimary,
-                            ),
+                  Expanded(
+                    flex: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? TColors.containerPrimaryDark
+                              : TColors.containerPrimary,
+                          borderRadius: BorderRadius.circular(10.0),
+                          border: Border.all(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.borderDark
+                                    : TColors.containerSecondary,
                           ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedItem = newValue;
-                        });
-                      },
+                        ),
+                        child: DropdownButton<String>(
+                          isExpanded: true,
+                          dropdownColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? TColors.surfaceDark
+                                  : TColors.containerSecondary,
+                          menuMaxHeight: 200,
+                          underline: Container(),
+                          borderRadius: BorderRadius.circular(10.0),
+                          elevation: 2,
+                          style:
+                              DropdownStyle.getDropdownMenuItemStyle().copyWith(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? TColors.textPrimaryDark
+                                    : TColors.textPrimary,
+                          ),
+                          value: _selectedItem,
+                          items: _items.map((String item) {
+                            return DropdownMenuItem<String>(
+                              value: item,
+                              child: Text(
+                                item,
+                                style: DropdownStyle.getDropdownMenuItemStyle()
+                                    .copyWith(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? TColors.textPrimaryDark
+                                      : TColors.textPrimary,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _selectedItem = newValue;
+                            });
+                          },
+                        ),
+                      ),
                     ),
                   ),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      minWidth: 200,
-                    ),
-                    child: SegmentedButton<String>(
-                      style: SegmentedButton.styleFrom(
-                        selectedBackgroundColor:
-                            Theme.of(context).brightness == Brightness.dark
-                                ? TColors.primaryDark
-                                : TColors.containerSecondary,
-                        selectedForegroundColor:
-                            Theme.of(context).brightness == Brightness.dark
-                                ? TColors.textWhite
-                                : TColors.textPrimary,
-                        foregroundColor:
-                            Theme.of(context).brightness == Brightness.dark
-                                ? TColors.textSecondaryDark
-                                : TColors.textSecondary,
-                        backgroundColor:
-                            Theme.of(context).brightness == Brightness.dark
-                                ? TColors.containerPrimaryDark
-                                : Colors.grey[100],
-                        textStyle: Theme.of(context).textTheme.labelLarge,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 4,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: SegmentedButton<String>(
+                        style: SegmentedButton.styleFrom(
+                          selectedBackgroundColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? TColors.primaryDark
+                                  : TColors.containerSecondary,
+                          selectedForegroundColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? TColors.textWhite
+                                  : TColors.textPrimary,
+                          foregroundColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? TColors.textSecondaryDark
+                                  : TColors.textSecondary,
+                          backgroundColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? TColors.containerPrimaryDark
+                                  : Colors.grey[100],
+                          textStyle: Theme.of(context).textTheme.labelLarge,
+                        ),
+                        segments: const [
+                          ButtonSegment<String>(
+                            value: 'Expense',
+                            label: Text('Expense'),
+                          ),
+                          ButtonSegment<String>(
+                            value: 'Income',
+                            label: Text('Income'),
+                          ),
+                        ],
+                        selected: {_selectedCategory},
+                        onSelectionChanged: (newSelection) {
+                          setState(() {
+                            _selectedCategory = newSelection.first;
+                            // Update dropdown items based on selected category, including 'All'
+                            final metrics = _dataManager.metrics;
+                            _items = _selectedCategory == 'Income'
+                                ? [
+                                    'All',
+                                    ...(metrics?.incomeCategories.keys ?? [])
+                                  ]
+                                : [
+                                    'All',
+                                    ...(metrics?.expenseCategories.keys ?? [])
+                                  ];
+                            _selectedItem =
+                                _items.isNotEmpty ? _items.first : null;
+                          });
+                        },
                       ),
-                      segments: const [
-                        ButtonSegment<String>(
-                          value: 'Expense',
-                          label: Text('Expense'),
-                        ),
-                        ButtonSegment<String>(
-                          value: 'Income',
-                          label: Text('Income'),
-                        ),
-                      ],
-                      selected: {_selectedCategory},
-                      onSelectionChanged: (newSelection) {
-                        setState(() {
-                          _selectedCategory = newSelection.first;
-                          // Update dropdown items based on selected category, including 'All'
-                          final metrics = _dataManager.metrics;
-                          _items = _selectedCategory == 'Income'
-                              ? [
-                                  'All',
-                                  ...(metrics?.incomeCategories.keys ?? [])
-                                ]
-                              : [
-                                  'All',
-                                  ...(metrics?.expenseCategories.keys ?? [])
-                                ];
-                          _selectedItem =
-                              _items.isNotEmpty ? _items.first : null;
-                        });
-                      },
                     ),
                   ),
                 ],

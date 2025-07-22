@@ -1278,113 +1278,59 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
     String? Function(String?)? validator,
     bool isOptional = false,
   }) {
-    final primaryColor = isDark ? TColors.primaryDark : TColors.primary;
-    final borderColor = isDark
-        ? TColors.textSecondaryDark.withValues(alpha: 0.3)
-        : TColors.textSecondary.withValues(alpha: 0.3);
-
     // Create the label with optional indicator
     final displayLabel = isOptional ? '$label (Optional)' : label;
 
-    return Container(
-      decoration: BoxDecoration(
-        color:
-            isDark ? TColors.surfaceDark.withValues(alpha: 0.8) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: borderColor,
-          width: 1,
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: displayLabel,
+        helperText: helperText,
+        prefixIcon: Icon(
+          icon,
+          color: Theme.of(context).primaryColor,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withValues(alpha: 0.15)
-                : Colors.grey.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        inputFormatters: inputFormatters,
-        validator: validator,
-        style: TextStyle(
-          color: isDark ? TColors.textPrimaryDark : TColors.textPrimary,
-          fontWeight: FontWeight.w500,
-          fontSize: 16,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
-        decoration: InputDecoration(
-          labelText: displayLabel,
-          helperText: helperText,
-          counterText: '', // Hide the counter for maxLength
-          prefixIcon: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: primaryColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
-                child: FaIcon(
-                  icon,
-                  size: 14,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? TColors.textWhite
-                      : primaryColor,
-                ),
-              ),
-            ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Colors.grey.shade300,
+            width: 1.5,
           ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).primaryColor,
+            width: 2,
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Colors.red,
+            width: 1.5,
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: primaryColor, width: 2),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Colors.red,
+            width: 2,
           ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: TColors.errorPrimary, width: 1.5),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: TColors.errorPrimary, width: 2),
-          ),
-          filled: true,
-          fillColor: Colors.transparent,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 20,
-          ),
-          labelStyle: TextStyle(
-            color: isDark
-                ? TColors.textSecondaryDark.withValues(alpha: 0.8)
-                : TColors.textSecondary.withValues(alpha: 0.8),
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-          ),
-          helperStyle: TextStyle(
-            color: isDark
-                ? TColors.textSecondaryDark.withValues(alpha: 0.7)
-                : TColors.textSecondary.withValues(alpha: 0.7),
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
-          ),
-          errorStyle: TextStyle(
-            color: TColors.errorPrimary,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
+        ),
+        filled: true,
+        fillColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey.shade800.withValues(alpha: 0.3)
+            : Colors.grey.shade50,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
         ),
       ),
     );

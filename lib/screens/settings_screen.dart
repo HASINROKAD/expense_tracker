@@ -297,10 +297,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ),
                           ),
                         ),
-                        Icon(
-                          Icons.chevron_right_outlined,
-                          color: Colors.red[400],
-                        ),
                       ],
                     ),
                   ),
