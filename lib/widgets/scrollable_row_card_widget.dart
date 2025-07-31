@@ -210,22 +210,34 @@ class _ScrollableRowCardWidgetState extends State<ScrollableRowCardWidget> {
                     DynamicTextRow(
                       label: 'Current Balance:',
                       value: widget.currentBalance.toStringAsFixed(2),
-                      valueColor: Colors.green,
+                      valueColor: widget.currentBalance >= 0
+                          ? Colors.green
+                          : Colors.red,
                     ),
                     DynamicTextRow(
                       label: 'This Week Balance:',
-                      value: widget.endOfMonthBalance.toStringAsFixed(2),
-                      valueColor: Colors.green,
+                      value: widget.thisWeekBalance.toStringAsFixed(2),
+                      valueColor: widget.thisWeekBalance >= 0
+                          ? Colors.green
+                          : Colors.red,
                     ),
                     DynamicTextRow(
                       label: 'This Month Balance:',
-                      value: widget.thisWeekBalance.toStringAsFixed(2),
-                      valueColor: Colors.green,
+                      value: widget.thisMonthBalance.toStringAsFixed(2),
+                      valueColor: widget.thisMonthBalance >= 0
+                          ? Colors.green
+                          : Colors.red,
                     ),
                     DynamicTextRow(
                       label: 'Year to Date Balance:',
-                      value: widget.thisMonthBalance.toStringAsFixed(2),
-                      valueColor: Colors.green,
+                      value:
+                          (widget.yearToDateIncome - widget.yearToDateExpense)
+                              .toStringAsFixed(2),
+                      valueColor: (widget.yearToDateIncome -
+                                  widget.yearToDateExpense) >=
+                              0
+                          ? Colors.green
+                          : Colors.red,
                     ),
                   ],
                 ),
