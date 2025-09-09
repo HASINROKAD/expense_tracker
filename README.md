@@ -29,7 +29,7 @@ Make sure you have the following installed:
   - **Desktop** → Required native build dependencies  
 
 ---
-## expense_tracker/
+## expense_tracker
 ├── android/            # Android native code                           
 ├── ios/                # iOS native code                               
 ├── lib/                # Main Flutter source code                       
@@ -44,7 +44,7 @@ Make sure you have the following installed:
 ├── pubspec.yaml        # Dependencies and assets                       
 └── README.md           # Project documentation                          
 
-# ScreenShots
+## ScreenShots
 <p>
   <img src="assets/screenshots/1.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/screenshots/2.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
