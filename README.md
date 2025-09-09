@@ -29,7 +29,7 @@ Make sure you have the following installed:
   - **Desktop** → Required native build dependencies  
 
 ---
-## Expense_Tracker
+## Expense Tracker Folder Structure
 ├── android/            # Android native code                           
 ├── ios/                # iOS native code                               
 ├── lib/                # Main Flutter source code                       
