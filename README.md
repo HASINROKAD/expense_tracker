@@ -30,17 +30,43 @@ Make sure you have the following installed:
 
 ---
 ## expense_tracker/
-├── android/            # Android native code
-├── ios/                # iOS native code
-├── lib/                # Main Flutter source code
-│   ├── main.dart       # Entry point of the app
-│   ├── models/         # Data models (Expense, Income, User, etc.)
-│   ├── screens/        # Screens (Dashboard, Add Expense, Add Income)
-│   ├── services/       # Supabase integration and API handling
-│   ├── utils/          # Helpers, validators, constants
-│   └── widgets/        # Reusable UI components
-├── test/               # Unit and widget tests
-├── supabase_schema.sql # Database schema for Supabase
-├── pubspec.yaml        # Dependencies and assets
-└── README.md           # Project documentation
+├── android/            # Android native code                           
+├── ios/                # iOS native code                               
+├── lib/                # Main Flutter source code                       
+│   ├── main.dart       # Entry point of the app                        
+│   ├── models/         # Data models (Expense, Income, User, etc.)     
+│   ├── screens/        # Screens (Dashboard, Add Expense, Add Income)  
+│   ├── services/       # Supabase integration and API handling         
+│   ├── utils/          # Helpers, validators, constants                
+│   └── widgets/        # Reusable UI components                        
+├── test/               # Unit and widget tests                         
+├── supabase_schema.sql # Database schema for Supabase                  
+├── pubspec.yaml        # Dependencies and assets                       
+└── README.md           # Project documentation                          
+
+# ScreenShots
+<p>
+  <img src="assets/screenshots/1.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/2.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/3.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/4.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/5.jpeg" width="180" />
+</p>
+&nbsp;
+<p>
+  <img src="assets/screenshots/6.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/7.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/8.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/9.jpeg" width="180"/>&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/10.jpeg" width="180"/>
+</p>
+&nbsp;
+<p>
+  <img src="assets/screenshots/11.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/12.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/13.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/14.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/15.jpeg" width="180" />
+</p>
+
 
