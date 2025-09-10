@@ -49,24 +49,28 @@ Make sure you have the following installed:
   <img src="assets/screenshots/1.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/screenshots/2.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/screenshots/3.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/screenshots/4.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/screenshots/5.jpeg" width="180" />
+  <img src="assets/screenshots/4.jpeg" width="180" />
 </p>
 &nbsp;
 <p>
+  <img src="assets/screenshots/5.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/screenshots/6.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/screenshots/7.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/screenshots/8.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/8.jpeg" width="180" />
+
+</p>
+&nbsp;
+<p>  
   <img src="assets/screenshots/9.jpeg" width="180"/>&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/screenshots/10.jpeg" width="180"/>
+  <img src="assets/screenshots/10.jpeg" width="180"/>&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/11.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/screenshots/12.jpeg" width="180" />
+
 </p>
 &nbsp;
 <p>
-  <img src="assets/screenshots/11.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/screenshots/12.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/screenshots/13.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/screenshots/14.jpeg" width="180" />&nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/screenshots/15.jpeg" width="180" />
 </p>
-
 
