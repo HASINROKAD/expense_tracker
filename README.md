@@ -82,3 +82,51 @@ Make sure you have the following installed:
 
 ---
 
+## 📌 Tech Stack
+
+This project is built using the following technologies:
+
+- **Frontend:** Flutter, Dart  
+- **Backend:** Supabase (Postgres + Auth + Storage)  
+- **State Management:** Provider / Riverpod (based on project setup)  
+- **Platforms Supported:**  
+  - **Android**  
+  - **iOS**  
+  - **Web**  
+  - **Desktop (Windows, Linux, macOS)**  
+
+---
+
+## 📚 Documentation
+
+- [Flutter Documentation](https://flutter.dev/docs)  
+- [Dart Language Guide](https://dart.dev/guides)  
+- [Supabase Documentation](https://supabase.com/docs)  
+
+
+---
+## 🤝 Contributing
+
+Contributions are welcome!  
+1. Fork the repository  
+2. Create a new branch (`git checkout -b feature-name`)  
+3. Commit your changes (`git commit -m "Add feature"`)  
+4. Push to the branch (`git push origin feature-name`)  
+5. Open a Pull Request  
+
+
+## 🚧 Limitations
+
+- No support for recurring transactions or budget limits  
+- No offline mode or data caching  
+- Limited category management (static list)  
+
+
+## 🔮 Future Enhancements
+
+- Add user-defined categories and recurring expense tracking  
+- Implement budget goals and notifications  
+- Enable offline mode with data caching  
+- Add dark mode support  
+- Export reports in PDF/Excel  
+
