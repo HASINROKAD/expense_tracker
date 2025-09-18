@@ -442,7 +442,7 @@ class _BackupSyncScreenState extends State<BackupSyncScreen> {
         ),
         value: value,
         onChanged: onChanged,
-        activeColor: primaryColor,
+        activeThumbColor: primaryColor,
         activeTrackColor: primaryColor.withValues(alpha: 0.3),
         inactiveThumbColor: isDark
             ? TColors.textSecondaryDark.withValues(alpha: 0.6)

@@ -286,7 +286,7 @@ class _PrivacySecurityScreenState extends State<PrivacySecurityScreen> {
             Switch(
               value: value,
               onChanged: onChanged,
-              activeColor: Theme.of(context).brightness == Brightness.dark
+              activeThumbColor: Theme.of(context).brightness == Brightness.dark
                   ? TColors.primaryDark
                   : TColors.primary,
               activeTrackColor: Theme.of(context).brightness == Brightness.dark

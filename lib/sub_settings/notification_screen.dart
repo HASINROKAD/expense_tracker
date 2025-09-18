@@ -359,9 +359,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
               Switch(
                 value: enabled ? value : false,
                 onChanged: enabled ? onChanged : null,
-                activeColor: Theme.of(context).brightness == Brightness.dark
-                    ? TColors.primaryDark
-                    : TColors.primary,
+                activeThumbColor:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? TColors.primaryDark
+                        : TColors.primary,
                 activeTrackColor:
                     Theme.of(context).brightness == Brightness.dark
                         ? TColors.primaryDark.withValues(alpha: 0.3)

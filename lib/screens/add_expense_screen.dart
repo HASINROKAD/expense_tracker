@@ -163,7 +163,7 @@ class AddExpenseScreenState extends State<AddExpenseScreen> {
                     border: OutlineInputBorder(),
                     labelText: 'Category',
                   ),
-                  value: _selectedCategory,
+                  initialValue: _selectedCategory,
                   items: _categories.map((String category) {
                     return DropdownMenuItem<String>(
                       value: category,
@@ -188,7 +188,7 @@ class AddExpenseScreenState extends State<AddExpenseScreen> {
                           border: OutlineInputBorder(),
                           labelText: 'Payment Method',
                         ),
-                        value: _selectedPaymentMethod,
+                        initialValue: _selectedPaymentMethod,
                         items: paymentMethods.map((String method) {
                           return DropdownMenuItem<String>(
                             value: method,
@@ -215,7 +215,7 @@ class AddExpenseScreenState extends State<AddExpenseScreen> {
                           border: OutlineInputBorder(),
                           labelText: 'Payment Status',
                         ),
-                        value: _selectedPaymentStatus,
+                        initialValue: _selectedPaymentStatus,
                         items: paymentStatus.map((String method) {
                           return DropdownMenuItem<String>(
                             value: method,
